@@ -1,6 +1,18 @@
 # fuchuang-kg
 江南大学服务创新外包项目，题号A27
 
+## 环境配置
+
+---
+
+python                    3.8.16
+
+torch                     1.11.0+cu113
+
+paddlenlp                 2.5.1
+
+paddlepaddle-gpu          2.3.2
+
 ## 初始模型：
 ---
 知识种子图图谱模型：paddlenlp-model-zoo-uie
