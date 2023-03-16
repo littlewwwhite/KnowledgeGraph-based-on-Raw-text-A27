@@ -19,13 +19,13 @@ def gpu_init(gpu_id, gpu_mem, ):
     print("Init mem frac is: {}".format(config.fraction_of_gpu_memory_for_pool())) # 0.003
     print("GPU device id is: {}".format(config.gpu_device_id())) # 0
 
-def read_txt_file(path):
-    with open(path, 'r') as f:
-        while True:
-            line = f.readline()
-            if not line:
-                break
-            yield line.strip()
+# def read_txt_file(path):
+#     with open(path, 'r') as f:
+#         while True:
+#             line = f.readline()
+#             if not line:
+#                 break
+#             yield line.strip()
 
 # 关系抽取并修改json文件
 def rel_json(content):
@@ -45,8 +45,9 @@ def rel_json(content):
     return all_relations
 
 # 将实体和关系信息写入json文件
-def write_json(all_relations, write_dir,content):
+def write_json(all_relations, write_dir, content, sent_id):
     dict= {}
+    dict["id"] = sent_id
     dict["sentText"] = content
     dict["relationMentions"] = all_relations
     with open(write_dir + ".json", "a", encoding="utf-8") as f:
@@ -54,13 +55,16 @@ def write_json(all_relations, write_dir,content):
         f.write('\n')
 
 # 执行函数
-def execute(path, write_dir):
+def execute(txt_path, write_dir):
     flag = 1
-    with open(path, 'r') as f:
-        for line in read_txt_file(path):
+    sent_id = 0
+    with open(txt_path, 'r') as f:
+        for line in f.readlines():
+            line = line.strip()
             all_relations = rel_json(line)
-            write_json(all_relations, write_dir,line)
-            if flag%10 == 0:
+            sent_id += 1
+            write_json(all_relations, write_dir, line, sent_id)
+            if flag % 10 == 0:
                 print("Done {} lines".format(flag))
 
 def main():
