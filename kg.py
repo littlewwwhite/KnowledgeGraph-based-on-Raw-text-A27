@@ -1,9 +1,9 @@
 import os
 import json
 import random
-
+from prepare.preprocess import process_text
 from utils import refine_knowledge_graph
-from prepare.process import execute, gpuinit
+from prepare.process import uie_execute, gpu_init
 
 
 class ModelTrainer:
@@ -100,8 +100,8 @@ class KnowledgeGraphBuilder:
     def __init__(self) -> None:
         self.data_dir = "data/project_v1"  # 存放生成的数据的地方
         self.text_path = "data/raw_data.txt" # 原始的文本文件
-        self.base_kg_path = os.path.join(self.data_dir, "base.json")
-        self.refined_kg_path = os.path.join(self.data_dir, "base_refined.json")
+        self.base_kg_path = os.path.join(self.data_dir, "base.json") # 生成的三元组文件
+        self.refined_kg_path = os.path.join(self.data_dir, "base_refined.json")# 筛选过后的三元组文件
 
         self.version = 0    # 会随着迭代次数的增加而增加
 
@@ -115,7 +115,7 @@ class KnowledgeGraphBuilder:
 
         cur_data_path = self.kg_path[-1]
         cur_out_path = os.path.join(self.data_dir, f"iteration_v{self.version}")
-        triner = ModelTrainer(cur_data_path, cur_out_path)
+        trainer = ModelTrainer(cur_data_path, cur_out_path)
 
         # 判断是否已经训练过了，毕竟这个地方可能会出问题的
         if not os.path.exists(trainer.prediction):
@@ -130,26 +130,17 @@ class KnowledgeGraphBuilder:
 
     def get_base_kg_from_txt(self):
         """ Get base knowledge graph by UIE and format it to SPN style
-
         input: self.text_path
         output: self.base_kg_path
         """
-
-        # 将 extract.py 里面的内容在这里面调用，这里面可能也是包含了多个函数的调用的
-        # 所要实现的功能是将 txt 文本变成 SPN 的格式，注意这里的文本应该是纯文本，
-        # 类似于 paddlenlp/data/raw_data/raw_data.txt，而不是 paddlenlp/data/raw_data/raw_data_lines.txt
-        # 也就是说，切分文本以及清洗文本也是在这里调用的，下面一些大致的流程，具体根据你之前的代码修改
-
-        # 1. 清洗文本
-
-        # 2. 切分句子
-        texts = []
+        # 1. 清洗文本，切分句子为指定长度
+        texts = process_text(self.text_path,480)
 
         # 3. 喂给 UIE 并得到 relations，注意这里要保存句子的 id（从 0 开始算
         #    注意：这里如果发现已经存在了 self.base_kg_path，就跳过 UIE
         #    如果想要重新使用 UIE 抽取，删掉这个文件就行
         if not os.path.exists(self.base_kg_path):
-            all_items = execute(texts)
+            all_items = uie_execute(texts)
             with open(self.base_kg_path, 'w') as f:
                 for item in all_items():
                     f.writelines(json.dumps(item, ensure_ascii=False) + "\n")
@@ -162,6 +153,7 @@ class KnowledgeGraphBuilder:
 
     def save_to_local(self):
         """用于将这个类保存到本地的一个方法"""
+
         pass
 
     def load_from_local(self, path):

@@ -44,7 +44,6 @@ def rel_json(content):
                         all_relations.append(rel_triple)
     return all_relations
 
-
 # # 将实体和关系信息写入json文件
 # def write_json(all_relations, write_dir, content, sent_id):
 #     dict= {}
@@ -56,7 +55,7 @@ def rel_json(content):
 #         f.write('\n')
 
 # 执行函数
-def execute(texts):
+def uie_execute(texts):
 
     sent_id = 0
     all_items = []
@@ -66,29 +65,26 @@ def execute(texts):
 
         item = {}
         item["id"] = sent_id
-        item["sentText"] = content
+        item["sentText"] = line
         item["relationMentions"] = all_relations
 
         sent_id += 1
         if sent_id % 10 == 0 and sent_id != 0:
-            print("Done {} lines".format(flag))
+            print("Done {} lines".format(sent_id))
 
         all_items.append(item)
 
     return all_items
-    # with open(write_dir, 'w') as f:
-    #     for item in all_items():
-    #         f.writelines(json.dumps(item, ensure_ascii=False) + "\n")
 
-
-def main():
-    gpu_init(0, 20000)
-    version = 'res_base_v2'
-    data_dir = '/data_F/zhijian/paddlenlp/data/'
-    txt_path = os.path.join(data_dir, 'raw_data/raw_data_lines.txt')
-    write_dir = os.path.join(data_dir, 'res_data/', version)
-    execute(txt_path, write_dir)
-
-
-if __name__ == '__main__':
-    main()
+#
+# def main():
+#     gpu_init(0, 20000)
+#     version = 'res_base_v2'
+#     data_dir = '/data_F/zhijian/paddlenlp/data/'
+#     txt_path = os.path.join(data_dir, 'raw_data/raw_data_lines.txt')
+#     write_dir = os.path.join(data_dir, 'res_data/', version)
+#     uie_execute(txt_path, write_dir)
+#
+#
+# if __name__ == '__main__':
+#     main()
