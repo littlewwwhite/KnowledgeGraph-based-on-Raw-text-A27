@@ -7,7 +7,7 @@
 
 python                    3.8.16
 
-torch                     1.11.0+cu113
+torch                     1.11.0+cu113~
 
 paddlenlp                 2.5.1
 
