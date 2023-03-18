@@ -1,4 +1,4 @@
-import os, json
+import os
 from prepare.schema import schema_v2
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '3'
