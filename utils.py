@@ -45,4 +45,6 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=False):
             line["relations"] = refined_triples
             f_out.writelines(json.dumps(line, ensure_ascii=False) + "\n")
 
+    print("筛选完成！辛苦！")
+
     return refined_kg_path

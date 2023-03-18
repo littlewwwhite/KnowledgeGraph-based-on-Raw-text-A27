@@ -5,11 +5,12 @@ import random
 from prepare.preprocess import process_text
 from utils import refine_knowledge_graph
 from prepare.process import uie_execute, gpu_init
+from prepare.filter import auto_filter
 
 
 class ModelTrainer:
 
-    def __init__(self, data_path, output_dir) -> None:
+    def __init__(self, data_path, output_dir, model_name_or_path) -> None:
         """ 用来训练 SPN 的一个类
 
         Args:
@@ -19,6 +20,7 @@ class ModelTrainer:
         """
         self.data_path = data_path
         self.generated_data_directory = output_dir
+        self.model_name_or_path = model_name_or_path
 
         os.makedirs(output_dir, exist_ok=True)
         self.train_file = os.path.join(output_dir, "train.json")
@@ -30,6 +32,7 @@ class ModelTrainer:
         self.test_result_refine = os.path.join(output_dir, 'test_result_refine.json')
 
         # TODO: 在 main 函数保存 data，保存到 self.data_instance_path
+        # 这个是保存了关系的 id 与类别的映射表的文件
         self.data_instance_path = os.path.join(output_dir, 'alphabet.json')
 
         self.final_knowledge_graph = os.path.join(output_dir, 'knowledge_graph.json}')
@@ -39,7 +42,7 @@ class ModelTrainer:
 
     def generate_running_cmd(self):
         params = "python -m main"
-        params += " --bert_directory BERT_PATH"
+        params += f" --bert_directory {self.model_name_or_path}"
         params += " --max_epoch 20"
         params += " --max_span_length 10"
         params += " --num_generated_triples 15"
@@ -149,6 +152,8 @@ class KnowledgeGraphBuilder:
         self.base_kg_path = os.path.join(self.data_dir, "base.json") # 生成的三元组文件
         self.refined_kg_path = os.path.join(self.data_dir, "base_refined.json")# 筛选过后的三元组文件
 
+        self.model_name_or_path = "bert-base-chinese" # 预训练模型的名字
+
         self.version = 0    # 会随着迭代次数的增加而增加
 
         self.kg_paths = [] # 一个数组，代表不同迭代版本的知识图谱
@@ -161,7 +166,7 @@ class KnowledgeGraphBuilder:
 
         cur_data_path = self.kg_path[-1]
         cur_out_path = os.path.join(self.data_dir, f"iteration_v{self.version}")
-        trainer = ModelTrainer(cur_data_path, cur_out_path)
+        trainer = ModelTrainer(cur_data_path, cur_out_path, self.model_name_or_path)
 
         # 判断是否已经训练过了，毕竟这个地方可能会出问题的
         if not os.path.exists(trainer.prediction):
@@ -192,10 +197,10 @@ class KnowledgeGraphBuilder:
                     f.writelines(json.dumps(item, ensure_ascii=False) + "\n")
 
         # 4. 算法验证，使用 bertTokenizer 检测一下实体是否还存在于句子里面
-        filtted_items = auto_filter(all_items)
+        filtted_items = auto_filter(all_items, self.model_name_or_path)
 
         # 5. 人工筛选并保存，因为需要加断点，所以需要一边做一边保存
-        manual_filter(filtted_items, self.refined_kg_path)
+        refine_knowledge_graph(filtted_items, self.refined_kg_path)
 
     def save_to_local(self):
         """用于将这个类保存到本地的一个方法"""
