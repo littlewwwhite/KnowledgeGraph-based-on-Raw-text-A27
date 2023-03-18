@@ -29,6 +29,9 @@ class ModelTrainer:
         self.test_result_format = os.path.join(output_dir, 'test_result_format.json')
         self.test_result_refine = os.path.join(output_dir, 'test_result_refine.json')
 
+        # TODO: 在 main 函数保存 data，保存到 self.data_instance_path
+        self.data_instance_path = os.path.join(output_dir, 'alphabet.json')
+
         self.final_knowledge_graph = os.path.join(output_dir, 'knowledge_graph.json}')
 
         self.split_data()
@@ -48,22 +51,22 @@ class ModelTrainer:
         params += f" --generated_data_directory {self.generated_data_directory}"
         return params
 
-    def save_data(self, data, path):
+    def save_data(self, data, trg_path):
         """
         根据不同的数据类型将数据保存数据到指定的文件
         """
-        if path.endswith(".json"):
-            with open(path, 'w') as f:
+        if trg_path.endswith(".json"):
+            with open(trg_path, 'w') as f:
                 for line in data:
                     json_line = json.dumps(line, ensure_ascii=False)
                     f.write(json_line + "\n")
-        elif path.endswith(".txt"):
-            with open(path, 'w') as f:
+        elif trg_path.endswith(".txt"):
+            with open(trg_path, 'w') as f:
                 for line in data:
                     f.write(line + "\n")
         else:
             raise ValueError("不支持的文件格式")
-        print(f"数据保存到 {path} 成功")
+        print(f"数据保存到 {trg_path} 成功")
 
     def split_data(self):
         """将知识图谱数据(SPN_style)切分为三个文件"""
@@ -103,7 +106,7 @@ class ModelTrainer:
 
         # 将预测的结果跟训练集对齐，转化为 SPN style 的文件，注意，此时先不跟上个版本的合并
 
-        "获取测试集和spn预测结果"
+        """获取测试集和spn预测结果"""
         with open(self.test_file, 'r', encoding='utf-8') as file:
             lines = file.readlines()
 
@@ -117,7 +120,12 @@ class ModelTrainer:
 
         """
         test_pred_lines = convert_pred_to_spn_style(prediction) # 将预测结果转化为SPN style，返回数组
+
+        prediction: ["pred_rel", "rel_prob", "head_start_index", "head_end_index", "head_start_prob", "head_end_prob", "tail_start_index", "tail_end_index", "tail_start_prob", "tail_end_prob"]
         """
+
+        # TODO 此处做 align 的工作，覆盖掉 test_line 中的 relationMentioned
+        # test_line[9]["relationMentioned"] = func1(asdasd)
 
         """save_data(test_pred_lines, test_result_format) """
         self.save_data(test_pred_lines, self.test_result_format)  # 保存到文件里面
@@ -125,7 +133,7 @@ class ModelTrainer:
 
     def refine_and_extend(self):
         """将生成的 test_result_format 重新经过一遍人工清洗"""
-        refine_knowledge_graph(self.test_result_format, self.test_result_refine)
+        refine_knowledge_graph(self.test_result_format, self.test_result_refine, fast_mode=True)
 
         # 然后跟 self.data_path 里面的 relations 合并，合并后保存到 self.final_knowledge_graph 里面
 

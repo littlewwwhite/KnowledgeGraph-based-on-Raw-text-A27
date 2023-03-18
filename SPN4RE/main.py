@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     data_arg = add_argument_group('Data')
-    
+
     data_arg.add_argument('--dataset_name', type=str, default="NYT-exact")
     # data_arg.add_argument('--all_file', type=str, default="/data_F/zhijian/SPN4RE/data/zhijian_data_v1/res_base_v4.json")
     # data_arg.add_argument('--train_file', type=str, default="/data_F/zhijian/SPN4RE/data/zhijian_data_v1/train.json")
@@ -55,12 +55,12 @@ if __name__ == '__main__':
     data_arg.add_argument('--train_file', type=str, default="./data/NYT/exact_data/train.json")
     data_arg.add_argument('--valid_file', type=str, default="./data/NYT/exact_data/valid.json")
     data_arg.add_argument('--test_file', type=str, default="./data/NYT/exact_data/test.json")
-    
+
     # data_arg.add_argument('--dataset_name', type=str, default="NYT-partial")
     # data_arg.add_argument('--train_file', type=str, default="./data/NYT/casrel_data/new_train.json")
     # data_arg.add_argument('--valid_file', type=str, default="./data/NYT/casrel_data/new_valid.json")
     # data_arg.add_argument('--test_file', type=str, default="./data/NYT/casrel_data/new_test.json")
-    
+
     # data_arg.add_argument('--dataset_name', type=str, default="WebNLG")
     # data_arg.add_argument('--train_file', type=str, default="./data/WebNLG/clean_WebNLG/new_train.json")
     # data_arg.add_argument('--valid_file', type=str, default="./data/WebNLG/clean_WebNLG/new_valid.json")
@@ -110,4 +110,7 @@ if __name__ == '__main__':
     data = build_data(args)
     model = SetPred4RE(args, data.relational_alphabet.size())
     trainer = Trainer(model, data, args)
+    # TODO
+    data.relational_alphabet.save(args.generated_data_directory, 'alphabet')
+
     trainer.train_model()
