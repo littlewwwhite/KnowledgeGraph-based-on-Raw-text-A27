@@ -29,18 +29,7 @@ def shuffle(path):
     with open(path, 'w') as f:
         f.writelines(lines)
 
-def split_data(path, train_path, valid_path, test_path):
-    with open(path, 'r') as f:
-        lines = f.readlines()
-    train_lines = lines[:int(len(lines) * 0.3)]
-    valid_lines = lines[int(len(lines) * 0.3):int(len(lines) * 0.5)]
-    test_lines = lines[int(len(lines) * 0.5):]
-    with open(train_path, 'w') as f:
-        f.writelines(train_lines)
-    with open(valid_path, 'w') as f:
-        f.writelines(valid_lines)
-    with open(test_path, 'w') as f:
-        f.writelines(test_lines)
+
 
 def set_seed(seed):
     random.seed(seed)

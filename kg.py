@@ -37,7 +37,7 @@ class ModelTrainer:
     def generate_running_cmd(self):
         params = "python -m main"
         params += " --bert_directory BERT_PATH"
-        params += " --max_epoch 100"
+        params += " --max_epoch 20"
         params += " --max_span_length 10"
         params += " --num_generated_triples 15"
         params += " --max_grad_norm 2.5"
@@ -48,6 +48,23 @@ class ModelTrainer:
         params += f" --generated_data_directory {self.generated_data_directory}"
         return params
 
+    def save_data(self, data, path):
+        """
+        根据不同的数据类型将数据保存数据到指定的文件
+        """
+        if path.endswith(".json"):
+            with open(path, 'w') as f:
+                for line in data:
+                    json_line = json.dumps(line, ensure_ascii=False)
+                    f.write(json_line + "\n")
+        elif path.endswith(".txt"):
+            with open(path, 'w') as f:
+                for line in data:
+                    f.write(line + "\n")
+        else:
+            raise ValueError("不支持的文件格式")
+        print(f"数据保存到 {path} 成功")
+
     def split_data(self):
         """将知识图谱数据(SPN_style)切分为三个文件"""
 
@@ -55,21 +72,30 @@ class ModelTrainer:
             lines = [json.loads(line) for line in f.readlines()]
             lines = random.shuffle(lines)
 
-        dataset_length = len(lines)
+        # dataset_length = len(lines)
         # 按照 4:1:5 的比例切分数据集，并分别保存到三个路径里面
 
         """ 伪代码
         train_lines, valid_lines, test_lines = split(lines)
-
         save(train_lines, self.train_file)
         save(valid_lines, self.valid_file)
         save(test_lines, self.test_file)
         """
 
         # TODO Code Here
+        train_lines = lines[:int(len(lines) * 0.4)]
+        valid_lines = lines[int(len(lines) * 0.4):int(len(lines) * 0.5)]
+        test_lines = lines[int(len(lines) * 0.5):]
+        with open(self.train_file, 'w') as f:
+            f.writelines(train_lines)
+        with open(self.valid_file, 'w') as f:
+            f.writelines(valid_lines)
+        with open(self.test_file, 'w') as f:
+            f.writelines(test_lines)
 
     def train_and_test(self):
         """训练并测试这个模型，测试的预测结果会保存到 self.prediction 这个文件里面。"""
+
         os.system(self.params)
 
     def relation_align(self):
@@ -77,14 +103,25 @@ class ModelTrainer:
 
         # 将预测的结果跟训练集对齐，转化为 SPN style 的文件，注意，此时先不跟上个版本的合并
 
-        """伪代码
-        test_lines = read_json_file_lines(self.test_file)
+        "获取测试集和spn预测结果"
+        with open(self.test_file, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
 
-        prediction = read_test_file(self.prediction)
-        test_pred_lines = convert_pred_to_spn_style(prediction) # 返回的是数组
-        save(test_pred_lines, self.test_result_format)
+        test_lines = []
+        for line in lines:
+            test_line = json.loads(line)
+            test_lines.append(test_line)
+
+        with open(self.prediction, 'r', encoding='utf-8') as file:
+            prediction = json.load(file)
+
         """
-        pass
+        test_pred_lines = convert_pred_to_spn_style(prediction) # 将预测结果转化为SPN style，返回数组
+        """
+
+        """save_data(test_pred_lines, test_result_format) """
+        self.save_data(test_pred_lines, self.test_result_format)  # 保存到文件里面
+
 
     def refine_and_extend(self):
         """将生成的 test_result_format 重新经过一遍人工清洗"""
