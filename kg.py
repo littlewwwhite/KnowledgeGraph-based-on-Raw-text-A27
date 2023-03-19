@@ -127,20 +127,32 @@ class ModelTrainer:
         """
 
         # TODO 此处做 align 的工作，覆盖掉 test_line 中的 relationMentioned
-        test_pred_lines = {}
+        """这个是用index的版本"""
+
+        # test_pred_lines = {}
+        # for key, values in prediction.items():
+        #     pred_relation = []
+        #     for value in values:
+        #         pred_rel = value[0]
+        #         head_start_index = value[2]
+        #         head_end_index = value[3]
+        #         tail_start_index = value[6]
+        #         tail_end_index = value[7]
+        #         em1Text_index = [head_start_index, head_end_index]
+        #         em2Text_index = [tail_start_index, tail_end_index]
+        #         pred_relation.append([pred_rel, em1Text_index, em2Text_index])
+        #     test_pred_lines.update({key: pred_relation})
+
+        test_pred_lines = {} # 保存SPN训练的结果
         for key, values in prediction.items():
             pred_relation = []
             for value in values:
                 pred_rel = value[0]
-                head_start_index = value[2]
-                head_end_index = value[3]
-                tail_start_index = value[6]
-                tail_end_index = value[7]
-                em1Text_index = [head_start_index, head_end_index]
-                em2Text_index = [tail_start_index, tail_end_index]
-                pred_relation.append([pred_rel, em1Text_index, em2Text_index])
-
+                head_token = value[2]
+                tail_token = value[4]
+                pred_relation.append([pred_rel, head_token, tail_token])
             test_pred_lines.update({key: pred_relation})
+
 
         """save_data(test_pred_lines, test_result_format) """
         self.save_data(test_pred_lines, self.test_result_format)  # 保存到文件里面

@@ -51,22 +51,30 @@ def data_process(input_doc, relational_alphabet, tokenizer):
     for i in range(len(lines)):
         token_sent = [tokenizer.cls_token] + tokenizer.tokenize(remove_accents(lines[i]["sentText"])) + [tokenizer.sep_token]
         triples = lines[i]["relationMentions"]
-        target = {"relation": [], "head_start_index": [], "head_end_index": [], "tail_start_index": [], "tail_end_index": []}
+        # target = {"relation": [], "head_start_index": [], "head_end_index": [], "tail_start_index": [], "tail_end_index": []}
+        target = {"relation":[], "head_token":[], "head_end_index":[], "tail_start_index":[], "tail_end_index":[]}
         for triple in triples:
             head_entity = remove_accents(triple["em1Text"])
             tail_entity = remove_accents(triple["em2Text"])
             head_token = tokenizer.tokenize(head_entity)
             tail_token = tokenizer.tokenize(tail_entity)
-            relation_id = relational_alphabet.get_index(triple["label"])
-            head_start_index, head_end_index = list_index(head_token, token_sent)
-            assert head_end_index >= head_start_index
-            tail_start_index, tail_end_index = list_index(tail_token, token_sent)
-            assert tail_end_index >= tail_start_index
-            target["relation"].append(relation_id)
-            target["head_start_index"].append(head_start_index)
-            target["head_end_index"].append(head_end_index)
-            target["tail_start_index"].append(tail_start_index)
-            target["tail_end_index"].append(tail_end_index)
+            # relation_id = relational_alphabet.get_index(triple["label"])
+            # head_start_index, head_end_index = list_index(head_token, token_sent)
+            # assert head_end_index >= head_start_index
+            # tail_start_index, tail_end_index = list_index(tail_token, token_sent)
+            # assert tail_end_index >= tail_start_index
+            # target["relation"].append(relation_id)
+            # target["head_start_index"].append(head_start_index)
+            # target["head_end_index"].append(head_end_index)
+            # target["tail_start_index"].append(tail_start_index)
+            # target["tail_end_index"].append(tail_end_index)
+            relation_token = relational_alphabet.get_instance(triple["label"])
+            target["relation"].append(relation_token)
+            target["head_start_index"].append(head_token)
+            target["head_end_index"].append(head_token)
+            target["tail_start_index"].append(tail_token)
+            target["tail_end_index"].append(tail_token)
+
         sent_id = tokenizer.convert_tokens_to_ids(token_sent)
         samples.append([i, sent_id, target])
     return samples

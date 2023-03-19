@@ -108,7 +108,7 @@ if __name__ == '__main__':
     data = build_data(args)
     model = SetPred4RE(args, data.relational_alphabet.size())
     trainer = Trainer(model, data, args)
-    # TODO save alphabet
-    data.relational_alphabet.save(args.generated_data_directory, 'alphabet')
+
+    # data.relational_alphabet.save(args.generated_data_directory, 'alphabet')
 
     trainer.train_model()

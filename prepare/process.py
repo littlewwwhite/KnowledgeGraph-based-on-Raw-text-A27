@@ -1,5 +1,5 @@
 import os
-from prepare.schema import schema_v2
+from data.schema import schema_v2
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '3'
 import paddle.inference as paddle_infer
