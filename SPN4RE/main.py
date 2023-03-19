@@ -104,13 +104,11 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.visible_gpu)
     for arg in vars(args):
         print(arg, ":",  getattr(args, arg))
-    split_data(args.all_file, args.train_file, args.valid_file, args.test_file)
-    shuffle(args.train_file)
     set_seed(args.random_seed)
     data = build_data(args)
     model = SetPred4RE(args, data.relational_alphabet.size())
     trainer = Trainer(model, data, args)
-    # TODO
+    # TODO save alphabet
     data.relational_alphabet.save(args.generated_data_directory, 'alphabet')
 
     trainer.train_model()

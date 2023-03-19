@@ -11,21 +11,14 @@ def paddle_relation_ie(content):
     return relation_ie(content)
 
 # 定义一个函数，用于初始化GPU
-def gpu_init(gpu_id, gpu_mem, ):
+def gpu_init(gpu_id):
     config = paddle_infer.Config("./mobilenet.pdmodel", "./mobilenet.pdiparams")
-    config.enable_use_gpu(gpu_mem, gpu_id)
+    config.enable_use_gpu(gpu_id)
     print("Use GPU is: {}".format(config.use_gpu())) # True
     print("Init mem size is: {}".format(config.memory_pool_init_size_mb())) # 100
     print("Init mem frac is: {}".format(config.fraction_of_gpu_memory_for_pool())) # 0.003
     print("GPU device id is: {}".format(config.gpu_device_id())) # 0
 
-# def read_txt_file(path):
-#     with open(path, 'r') as f:
-#         while True:
-#             line = f.readline()
-#             if not line:
-#                 break
-#             yield line.strip()
 
 # 关系抽取并修改json文件
 def rel_json(content):
@@ -44,15 +37,6 @@ def rel_json(content):
                         all_relations.append(rel_triple)
     return all_relations
 
-# # 将实体和关系信息写入json文件
-# def write_json(all_relations, write_dir, content, sent_id):
-#     dict= {}
-#     dict["id"] = sent_id
-#     dict["sentText"] = content
-#     dict["relationMentions"] = all_relations
-#     with open(write_dir + ".json", "a", encoding="utf-8") as f:
-#         json.dump(dict, f, ensure_ascii=False, separators=(',', ':'))
-#         f.write('\n')
 
 # 执行函数
 def uie_execute(texts):
@@ -75,16 +59,3 @@ def uie_execute(texts):
         all_items.append(item)
 
     return all_items
-
-#
-# def main():
-#     gpu_init(0, 20000)
-#     version = 'res_base_v2'
-#     data_dir = '/data_F/zhijian/paddlenlp/data/'
-#     txt_path = os.path.join(data_dir, 'raw_data/raw_data_lines.txt')
-#     write_dir = os.path.join(data_dir, 'res_data/', version)
-#     uie_execute(txt_path, write_dir)
-#
-#
-# if __name__ == '__main__':
-#     main()

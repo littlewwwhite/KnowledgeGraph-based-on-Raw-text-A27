@@ -25,13 +25,6 @@ def add_sentences(sentences, max_line_length=480):
         output.append(current_line.strip())
     return output
 
-#
-# # 将文本写入文件
-# def write_formatted_output(output_file, formatted_output):
-#     with open(output_file, 'w', encoding='utf-8') as file:
-#         for line in formatted_output:
-#             file.write(line + '\n')
-
 # 将文本按照句子分割
 def process_text(input_file, output_file, max_line_length):
     sentences = clean_to_sentence(input_file)

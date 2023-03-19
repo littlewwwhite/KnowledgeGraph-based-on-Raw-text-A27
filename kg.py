@@ -8,6 +8,7 @@ from prepare.process import uie_execute, gpu_init
 from prepare.filter import auto_filter
 
 
+
 class ModelTrainer:
 
     def __init__(self, data_path, output_dir, model_name_or_path) -> None:
@@ -31,10 +32,8 @@ class ModelTrainer:
         self.test_result_format = os.path.join(output_dir, 'test_result_format.json')
         self.test_result_refine = os.path.join(output_dir, 'test_result_refine.json')
 
-        # TODO: 在 main 函数保存 data，保存到 self.data_instance_path
         # 这个是保存了关系的 id 与类别的映射表的文件
         self.data_instance_path = os.path.join(output_dir, 'alphabet.json')
-
         self.final_knowledge_graph = os.path.join(output_dir, 'knowledge_graph.json}')
 
         self.split_data()
@@ -88,16 +87,13 @@ class ModelTrainer:
         save(test_lines, self.test_file)
         """
 
-        # TODO Code Here
+        # DONE: 用上面的伪代码来实现
         train_lines = lines[:int(len(lines) * 0.4)]
         valid_lines = lines[int(len(lines) * 0.4):int(len(lines) * 0.5)]
         test_lines = lines[int(len(lines) * 0.5):]
-        with open(self.train_file, 'w') as f:
-            f.writelines(train_lines)
-        with open(self.valid_file, 'w') as f:
-            f.writelines(valid_lines)
-        with open(self.test_file, 'w') as f:
-            f.writelines(test_lines)
+        self.save_data(train_lines, self.train_file)
+        self.save_data(valid_lines, self.valid_file)
+        self.save_data(test_lines, self.test_file)
 
     def train_and_test(self):
         """训练并测试这个模型，测试的预测结果会保存到 self.prediction 这个文件里面。"""
@@ -105,9 +101,12 @@ class ModelTrainer:
         os.system(self.params)
 
     def relation_align(self):
-        """读取预测的结果，并将结果跟 test_file 中的三元组对应上"""
+        """
 
-        # 将预测的结果跟训练集对齐，转化为 SPN style 的文件，注意，此时先不跟上个版本的合并
+        读取预测的结果，并将结果跟 test_file 中的三元组对应上
+        将预测的结果跟训练集对齐，转化为 SPN style 的文件，注意，此时先不跟上个版本的合并
+
+        """
 
         """获取测试集和spn预测结果"""
         with open(self.test_file, 'r', encoding='utf-8') as file:
@@ -122,13 +121,26 @@ class ModelTrainer:
             prediction = json.load(file)
 
         """
-        test_pred_lines = convert_pred_to_spn_style(prediction) # 将预测结果转化为SPN style，返回数组
-
+        test_pred_lines = convert_pred_to_spn_style(prediction) # 将预测结果转化为SPN训练时的style，返回数组
+        # test_line[9]["relationMentioned"] = func1(asdasd)
         prediction: ["pred_rel", "rel_prob", "head_start_index", "head_end_index", "head_start_prob", "head_end_prob", "tail_start_index", "tail_end_index", "tail_start_prob", "tail_end_prob"]
         """
 
         # TODO 此处做 align 的工作，覆盖掉 test_line 中的 relationMentioned
-        # test_line[9]["relationMentioned"] = func1(asdasd)
+        test_pred_lines = {}
+        for key, values in prediction.items():
+            pred_relation = []
+            for value in values:
+                pred_rel = value[0]
+                head_start_index = value[2]
+                head_end_index = value[3]
+                tail_start_index = value[6]
+                tail_end_index = value[7]
+                em1Text_index = [head_start_index, head_end_index]
+                em2Text_index = [tail_start_index, tail_end_index]
+                pred_relation.append([pred_rel, em1Text_index, em2Text_index])
+
+            test_pred_lines.update({key: pred_relation})
 
         """save_data(test_pred_lines, test_result_format) """
         self.save_data(test_pred_lines, self.test_result_format)  # 保存到文件里面
@@ -158,7 +170,7 @@ class KnowledgeGraphBuilder:
 
         self.kg_paths = [] # 一个数组，代表不同迭代版本的知识图谱
 
-        gpu_init(0, 20000) # 初始化 GPU
+        self.GPU = "0"  # GPU 的编号
 
 
     def run_iteration(self):
