@@ -6,6 +6,13 @@ from prepare.utils import refine_knowledge_graph
 from prepare.process import uie_execute
 from prepare.filter import auto_filter
 
+######### DEPRECATED #########
+# 这个脚本被分拆为三个文件：
+# 1. model_trainer.py
+# 2. knowledge_graph_builder.py
+# 3. main.py
+
+
 
 
 class ModelTrainer:
