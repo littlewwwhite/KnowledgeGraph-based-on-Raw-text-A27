@@ -3,8 +3,7 @@ import torch
 from models.set_decoder import SetDecoder
 from models.set_criterion import SetCriterion
 from models.seq_encoder import SeqEncoder
-from utils.functions import generate_triple
-import copy
+from prepare.utils import generate_triple
 
 
 class SetPred4RE(nn.Module):

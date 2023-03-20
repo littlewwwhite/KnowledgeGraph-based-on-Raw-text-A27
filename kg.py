@@ -1,10 +1,9 @@
 import os
-import re
 import json
 import random
 from prepare.preprocess import process_text
-from utils import refine_knowledge_graph
-from prepare.process import uie_execute, gpu_init
+from prepare.utils import refine_knowledge_graph
+from prepare.process import uie_execute
 from prepare.filter import auto_filter
 
 
@@ -80,14 +79,6 @@ class ModelTrainer:
         # dataset_length = len(lines)
         # 按照 4:1:5 的比例切分数据集，并分别保存到三个路径里面
 
-        """ 伪代码
-        train_lines, valid_lines, test_lines = split(lines)
-        save(train_lines, self.train_file)
-        save(valid_lines, self.valid_file)
-        save(test_lines, self.test_file)
-        """
-
-        # DONE: 用上面的伪代码来实现
         train_lines = lines[:int(len(lines) * 0.4)]
         valid_lines = lines[int(len(lines) * 0.4):int(len(lines) * 0.5)]
         test_lines = lines[int(len(lines) * 0.5):]
@@ -122,11 +113,10 @@ class ModelTrainer:
 
         """
         test_pred_lines = convert_pred_to_spn_style(prediction) # 将预测结果转化为SPN训练时的style，返回数组
-        # test_line[9]["relationMentioned"] = func1(asdasd)
+        test_line[9]["relationMentioned"] = func1(asdasd)
         prediction: ["pred_rel", "rel_prob", "head_start_index", "head_end_index", "head_start_prob", "head_end_prob", "tail_start_index", "tail_end_index", "tail_start_prob", "tail_end_prob"]
         """
 
-        # TODO 此处做 align 的工作，覆盖掉 test_line 中的 relationMentioned
         """这个是用index的版本"""
 
         # test_pred_lines = {}
@@ -143,6 +133,7 @@ class ModelTrainer:
         #         pred_relation.append([pred_rel, em1Text_index, em2Text_index])
         #     test_pred_lines.update({key: pred_relation})
 
+        # REVIEW use token replace the id_index
         test_pred_lines = {} # 保存SPN训练的结果
         for key, values in prediction.items():
             pred_relation = []

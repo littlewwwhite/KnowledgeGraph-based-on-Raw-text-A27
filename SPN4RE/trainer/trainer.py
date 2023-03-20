@@ -1,10 +1,9 @@
 import torch, random, gc, json
 from torch import nn, optim
-from tqdm import tqdm
 from transformers import AdamW
-from utils.average_meter import AverageMeter
-from utils.functions import formulate_gold
-from utils.metric import metric, num_metric, overlap_metric
+from prepare.utils import AverageMeter
+from prepare.utils import formulate_gold
+from prepare.utils import metric, num_metric, overlap_metric
 
 
 class Trainer(nn.Module):
