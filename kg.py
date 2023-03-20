@@ -162,8 +162,8 @@ class ModelTrainer:
 class KnowledgeGraphBuilder:
 
     def __init__(self) -> None:
-        self.data_dir = "data/project_v1"  # 存放生成的数据的地方
-        self.text_path = "data/raw_data.txt" # 原始的文本文件
+        self.data_dir = os.path.join("data", "project_v1")  # 存放生成的数据的地方
+        self.text_path = os.path.join("data", "raw_data.txt") # 原始的文本文件
         self.base_kg_path = os.path.join(self.data_dir, "base.json") # 生成的三元组文件
         self.refined_kg_path = os.path.join(self.data_dir, "base_refined.json")# 筛选过后的三元组文件
 
@@ -174,6 +174,8 @@ class KnowledgeGraphBuilder:
         self.kg_paths = [] # 一个数组，代表不同迭代版本的知识图谱
 
         self.GPU = "0"  # GPU 的编号
+
+        os.makedirs(self.data_dir, exist_ok=True)
 
 
     def run_iteration(self):
@@ -200,7 +202,7 @@ class KnowledgeGraphBuilder:
         output: self.base_kg_path
         """
         # 1. 清洗文本，切分句子为指定长度
-        texts = process_text(self.text_path,480)
+        texts = process_text(self.text_path, 480)
 
         # 3. 喂给 UIE 并得到 relations，注意这里要保存句子的 id（从 0 开始算
         #    注意：这里如果发现已经存在了 self.base_kg_path，就跳过 UIE
@@ -217,18 +219,18 @@ class KnowledgeGraphBuilder:
         # 5. 人工筛选并保存，因为需要加断点，所以需要一边做一边保存
         refine_knowledge_graph(filtted_items, self.refined_kg_path)
 
-    def save_to_local(self):
-        """用于将这个类保存到本地的一个方法"""
+    def save(self, save_path: str):
+        with open(save_path, "w", encoding="utf-8") as f:
+            json.dump(self.__dict__, f, ensure_ascii=False, indent=4)
 
-        pass
-
-    def load_from_local(self, path):
-        pass
-
+    def load(self, load_path: str):
+        with open(load_path, "r", encoding="utf-8") as f:
+            state = json.load(f)
+        self.__dict__.update(state)
 
 if __name__ == "__main__":
 
-    KG = KnowledgeGraphBuilder()
+    kg_builder = KnowledgeGraphBuilder()
 
     # startup
-    KG.get_base_kg_from_txt()  # 预计用时：
+    kg_builder.get_base_kg_from_txt()  # 预计用时：
