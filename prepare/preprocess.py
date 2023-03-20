@@ -26,7 +26,7 @@ def add_sentences(sentences, max_line_length=480):
     return output
 
 # 将文本按照句子分割
-def process_text(input_file, output_file, max_line_length):
+def process_text(input_file, max_line_length):
     sentences = clean_to_sentence(input_file)
     formatted_output = add_sentences(sentences, max_line_length)
     return formatted_output

@@ -22,6 +22,8 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=False):
         with open(refined_kg_path, 'r') as f:
             start_pos = len(f.readlines())
 
+        print(f"检测到已经筛选过 {start_pos} 条数据，将从第 {start_pos + 1} 条开始筛选")
+
     except:
         start_pos = 0
 

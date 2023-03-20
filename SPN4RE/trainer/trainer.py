@@ -1,9 +1,9 @@
 import torch, random, gc, json
 from torch import nn, optim
 from transformers import AdamW
-from prepare.utils import AverageMeter
-from prepare.utils import formulate_gold
-from prepare.utils import metric, num_metric, overlap_metric
+from SPN4RE.utils import AverageMeter
+from SPN4RE.utils import formulate_gold
+from SPN4RE.utils import metric, num_metric, overlap_metric
 
 
 class Trainer(nn.Module):

@@ -2,7 +2,8 @@ import os
 from data.schema import schema_v2
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '3'
-import paddle.inference as paddle_infer
+# import paddle.inference as paddle_infer
+from paddle import inference as paddle_infer
 from paddlenlp import Taskflow
 
 # 定义一个函数，用于关系抽取
