@@ -130,6 +130,28 @@ class ModelTrainer:
         #         pred_relation.append([pred_rel, em1Text_index, em2Text_index])
         #     test_pred_lines.update({key: pred_relation})
 
+        assert len(test_lines) == len(prediction)
+
+        pred_lines = []
+        # pred_rel ==> rel_label  # 使用 alphabet 里面
+        # test_lines[i][head_start_index:head_end_index] ==> me1Text
+        # ==> em2Text
+        for test_line, pred in zip(test_lines, list(predictions.values())):
+
+            triples = []
+            for triple in pred:
+                triple = {}
+                triple["rel_text"] = ''
+                # em1Text
+                # em2Text
+
+            triples.append(triple)
+
+            test_line["relationMentions"] = triples
+
+        # 将 test_lines 保存到文件里面
+
+
         # REVIEW use token replace the id_index
         test_pred_lines = {} # 保存SPN训练的结果
         for key, values in prediction.items():
@@ -151,6 +173,6 @@ class ModelTrainer:
         refine_knowledge_graph(self.test_result_format, self.test_result_refine, fast_mode=True)
 
         # 然后跟 self.data_path 里面的 relations 合并，合并后保存到 self.final_knowledge_graph 里面
-
+        # align
 
         return self.final_knowledge_graph

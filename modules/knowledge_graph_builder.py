@@ -92,7 +92,7 @@ class KnowledgeGraphBuilder:
         filtted_items = auto_filter(all_items, self.model_name_or_path)
 
         # 5. 人工筛选并保存，因为需要加断点，所以需要一边做一边保存
-        refine_knowledge_graph(filtted_items, self.refined_kg_path)
+        refine_knowledge_graph(filtted_items, self.refined_kg_path, fast_mode=True)
 
     def save(self, save_path=None):
         if save_path is None:
