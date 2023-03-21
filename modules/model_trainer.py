@@ -86,7 +86,8 @@ class ModelTrainer:
     def train_and_test(self):
         """训练并测试这个模型，测试的预测结果会保存到 self.prediction 这个文件里面。"""
 
-        os.system(self.params)
+        # TODO work_dir 存在问题
+        os.sysetm(f"cd SPN4RE && {self.params}")
 
     def relation_align(self):
         """
@@ -117,7 +118,7 @@ class ModelTrainer:
         """
 
         # 将预测结果转化为SPN训练时的style，返回数组
-        test_pred_lines = {}# 保存prediction里面需要的部分
+        test_pred_lines = {} # 保存prediction里面需要的部分
         for key, values in prediction.items():
             pred_relation = []
             for value in values:
@@ -154,23 +155,41 @@ class ModelTrainer:
             pred_line["id"] = test_line["id"]
             pred_line["relationMentions"] = triples
             # eg. pred_lines = [{"id": 0, "relationMentions": [{"em1Text": "美国", "em2Text": "中国", "label": "国籍}]}]
-            pred_lines.append(test_line)
+            pred_lines.append(pred_line)
 
         # 去除origin_lines里面跟pred_lines重复的relationMentions项
         # eg. origin_lines = [{"id": 0,"sentText":"xxxxxx", "relationMentions": [{"em1Text": "美国", "em2Text": "中国", "label": "国籍}]}]
         with open(self.data_path, 'r') as f:
             origin_lines = [json.loads(l) for l in f.readlines()]
 
+        # diff_lines = []
+        # for pred_line in pred_lines:
+        #     # 获取 pred_line 中的 relationMentions 字典
+        #     # pred_relation_mentions = [pred_lines["id"],pred_lines["relationMentions"]]
+        #     # 获取 origin_lines 中的 relationMentions 字典
+        #     diff_line = {}
+        #     for origin_line in origin_lines:
+        #         if origin_line["id"] == pred_line["id"]:
+        #             diff_line["id"] = origin_line["id"]
+        #             # diff_line["relationMentions"] = [pred_line["relationMentions"] for "relationMentions" in pred_line.keys() if "relationMentions" not in origin_line or origin_line["relationMentions"] != pred_line["relationMentions"]]
+        #             diff_line["relationMentions"] = set(pred_line["relationMentions"]) - set(origin_line["relationMentions"])
+
+        #     # 保存 diff_line 到 diff_lines 里面
+        #     diff_lines.append(diff_line)
+
         diff_lines = []
-        for pred_line in pred_lines:
-            # 获取 pred_line 中的 relationMentions 字典
-            # pred_relation_mentions = [pred_lines["id"],pred_lines["relationMentions"]]
-            # 获取 origin_lines 中的 relationMentions 字典
-            diff_line = {}
-            for origin_line in origin_lines:
-                if origin_line["id"] == pred_line["id"]:
-                    diff_line["id"] = origin_line["id"]
-                    diff_line["relationMentions"] = {pred_line["relationMentions"] for "relationMentions" in pred_line.keys() if "relationMentions" not in origin_line or origin_line["relationMentions"] != pred_line["relationMentions"]}
+        for pred_line in pred_lies:
+            origin_line = origin_lines[origin_line["id"]]
+            assert origin_line["id"] == pred_line["id"]
+
+            diff_line = pred_line.copy()
+
+            diff_rels = []
+            for rel in pred_line["relationMentions"]:
+                if rel not in origin_line["relationMentions"]:
+                    diff_rels.append(rel)
+
+            diff_line["relationMentions"] = diff_rels
 
             # 保存 diff_line 到 diff_lines 里面
             diff_lines.append(diff_line)
