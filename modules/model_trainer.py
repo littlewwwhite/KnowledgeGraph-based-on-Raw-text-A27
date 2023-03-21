@@ -178,7 +178,7 @@ class ModelTrainer:
         #     diff_lines.append(diff_line)
 
         diff_lines = []
-        for pred_line in pred_lies:
+        for pred_line in pred_lines:
             origin_line = origin_lines[origin_line["id"]]
             assert origin_line["id"] == pred_line["id"]
 
@@ -215,10 +215,12 @@ class ModelTrainer:
         origin_res = []
         # 将较短的test_result_refine的relationMentions合并到origin_lines里面
         for test_result_refine_line in test_result_refine:
-
+            origin_line = {}
             for origin_line in origin_lines:
                 if origin_line["id"] == test_result_refine_line["id"]:
-                    origin_line["relationMentions"] = set(origin_line["relationMentions"] + test_result_refine_line["relationMentions"])
+                    # 这里要用extend，而不是append，用后者会添加一个列表进去，而不是将列表里面的元素添加进去
+                    origin_line["relationMentions"].extend(test_result_refine_line["relationMentions"])
+                    # origin_line["relationMentions"] = set(origin_line["relationMentions"] + test_result_refine_line["relationMentions"])
 
             origin_res.append(origin_line)
 
