@@ -1,6 +1,7 @@
 import os
 import json
 import random
+import subprocess
 from prepare.utils import refine_knowledge_graph
 
 
@@ -33,10 +34,10 @@ class ModelTrainer:
         self.final_knowledge_graph = os.path.join(output_dir, 'knowledge_graph.json}')
 
         self.split_data()
-        self.generate_running_cmd()
+        self.params = self.generate_running_cmd()
 
     def generate_running_cmd(self):
-        params = "python -m main"
+        params = "python SPN4RE/main.py"
         params += f" --bert_directory {self.model_name_or_path}"
         params += " --max_epoch 20"
         params += " --max_span_length 10"
@@ -87,7 +88,11 @@ class ModelTrainer:
         """训练并测试这个模型，测试的预测结果会保存到 self.prediction 这个文件里面。"""
 
         # TODO work_dir 存在问题
-        os.sysetm(f"cd SPN4RE && {self.params}")
+        print(f"Running: $ {self.params}")
+
+
+
+        os.system()
 
     def relation_align(self):
         """
