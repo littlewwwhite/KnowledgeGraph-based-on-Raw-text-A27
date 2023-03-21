@@ -3,3 +3,5 @@
 .DS_Store
 
 __pycache__
+./SPN4RE/bert_pretrain/
+

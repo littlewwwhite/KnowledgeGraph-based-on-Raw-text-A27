@@ -29,7 +29,18 @@ def shuffle(path):
     with open(path, 'w') as f:
         f.writelines(lines)
 
-
+def split_data(path, train_path, valid_path, test_path):
+    with open(path, 'r') as f:
+        lines = f.readlines()
+    train_lines = lines[:int(len(lines) * 0.3)]
+    valid_lines = lines[int(len(lines) * 0.3):int(len(lines) * 0.5)]
+    test_lines = lines[int(len(lines) * 0.5):]
+    with open(train_path, 'w') as f:
+        f.writelines(train_lines)
+    with open(valid_path, 'w') as f:
+        f.writelines(valid_lines)
+    with open(test_path, 'w') as f:
+        f.writelines(test_lines)
 
 def set_seed(seed):
     random.seed(seed)
@@ -46,21 +57,21 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     data_arg = add_argument_group('Data')
-
+    
     data_arg.add_argument('--dataset_name', type=str, default="NYT-exact")
-    # data_arg.add_argument('--all_file', type=str, default="/data_F/zhijian/SPN4RE/data/zhijian_data_v1/res_base_v4.json")
-    # data_arg.add_argument('--train_file', type=str, default="/data_F/zhijian/SPN4RE/data/zhijian_data_v1/train.json")
-    # data_arg.add_argument('--valid_file', type=str, default="/data_F/zhijian/SPN4RE/data/zhijian_data_v1/valid.json")
-    # data_arg.add_argument('--test_file', type=str, default="/data_F/zhijian/SPN4RE/data/zhijian_data_v1/test.json")
-    data_arg.add_argument('--train_file', type=str, default="./data/NYT/exact_data/train.json")
-    data_arg.add_argument('--valid_file', type=str, default="./data/NYT/exact_data/valid.json")
-    data_arg.add_argument('--test_file', type=str, default="./data/NYT/exact_data/test.json")
-
+    # data_arg.add_argument('--all_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/res_base_v4.json")
+    data_arg.add_argument('--train_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/train.json")
+    data_arg.add_argument('--valid_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/valid.json")
+    data_arg.add_argument('--test_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/test.json")
+    # data_arg.add_argument('--train_file', type=str, default="./data/NYT/exact_data/train.json")
+    # data_arg.add_argument('--valid_file', type=str, default="./data/NYT/exact_data/valid.json")
+    # data_arg.add_argument('--test_file', type=str, default="./data/NYT/exact_data/test.json")
+    
     # data_arg.add_argument('--dataset_name', type=str, default="NYT-partial")
     # data_arg.add_argument('--train_file', type=str, default="./data/NYT/casrel_data/new_train.json")
     # data_arg.add_argument('--valid_file', type=str, default="./data/NYT/casrel_data/new_valid.json")
     # data_arg.add_argument('--test_file', type=str, default="./data/NYT/casrel_data/new_test.json")
-
+    
     # data_arg.add_argument('--dataset_name', type=str, default="WebNLG")
     # data_arg.add_argument('--train_file', type=str, default="./data/WebNLG/clean_WebNLG/new_train.json")
     # data_arg.add_argument('--valid_file', type=str, default="./data/WebNLG/clean_WebNLG/new_valid.json")
@@ -95,7 +106,7 @@ if __name__ == '__main__':
     misc_arg = add_argument_group('MISC')
     misc_arg.add_argument('--refresh', type=str2bool, default=False)
     misc_arg.add_argument('--use_gpu', type=str2bool, default=True)
-    misc_arg.add_argument('--visible_gpu', type=int, default=2)
+    misc_arg.add_argument('--visible_gpu', type=int, default=1)
     misc_arg.add_argument('--random_seed', type=int, default=1)
 
 
@@ -108,7 +119,5 @@ if __name__ == '__main__':
     data = build_data(args)
     model = SetPred4RE(args, data.relational_alphabet.size())
     trainer = Trainer(model, data, args)
-
     data.relational_alphabet.save(args.generated_data_directory, 'alphabet')
-
     trainer.train_model()

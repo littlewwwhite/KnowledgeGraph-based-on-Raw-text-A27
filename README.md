@@ -2,7 +2,7 @@
 江南大学服务创新外包项目，题号A27
 
 ## 项目流程介绍
-![img.png](intro_data/img.png)
+![img.png](image/img.png)
 
 
 ## 环境配置

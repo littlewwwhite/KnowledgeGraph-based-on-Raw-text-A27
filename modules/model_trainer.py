@@ -25,10 +25,10 @@ class ModelTrainer:
         self.test_file = os.path.join(output_dir, "test.json")
 
         self.prediction = os.path.join(output_dir, 'prediction.json') # 或者 .pickle
-        self.test_result_format = os.path.join(output_dir, 'test_result_format.json')
+        self.test_result_format = os.path.join(output_dir, 'test_result_format.json')# 保存了测试结果的文件
         self.test_result_refine = os.path.join(output_dir, 'test_result_refine.json')
 
-        # 这个是保存了关系的 id 与类别的映射表的文件
+        # 这个是保存了关系的 id 与类别的映射表的文件alphabet.json
         self.data_instance_path = os.path.join(output_dir, 'alphabet.json')
         self.final_knowledge_graph = os.path.join(output_dir, 'knowledge_graph.json}')
 
@@ -93,79 +93,93 @@ class ModelTrainer:
 
         读取预测的结果，并将结果跟 test_file 中的三元组对应上
         将预测的结果跟训练集对齐，转化为 SPN style 的文件，注意，此时先不跟上个版本的合并
+        将预测得到的结果跟测试集对齐后去除重复的三元组，保存到 knowledge_graph.json 文件中
 
         """
 
-        """获取测试集和spn预测结果"""
+        # 读取50%的测试集
         with open(self.test_file, 'r', encoding='utf-8') as file:
             lines = file.readlines()
 
+        # test_lines存放的是测试集的每一行
         test_lines = []
         for line in lines:
             test_line = json.loads(line)
             test_lines.append(test_line)
 
+        # 读取SPN的预测结果
         with open(self.prediction, 'r', encoding='utf-8') as file:
             prediction = json.load(file)
 
         """
-        test_pred_lines = convert_pred_to_spn_style(prediction) # 将预测结果转化为SPN训练时的style，返回数组
         test_line[9]["relationMentioned"] = func1(asdasd)
         prediction: ["pred_rel", "rel_prob", "head_start_index", "head_end_index", "head_start_prob", "head_end_prob", "tail_start_index", "tail_end_index", "tail_start_prob", "tail_end_prob"]
         """
 
-        """这个是用index的版本"""
-
-        # test_pred_lines = {}
-        # for key, values in prediction.items():
-        #     pred_relation = []
-        #     for value in values:
-        #         pred_rel = value[0]
-        #         head_start_index = value[2]
-        #         head_end_index = value[3]
-        #         tail_start_index = value[6]
-        #         tail_end_index = value[7]
-        #         em1Text_index = [head_start_index, head_end_index]
-        #         em2Text_index = [tail_start_index, tail_end_index]
-        #         pred_relation.append([pred_rel, em1Text_index, em2Text_index])
-        #     test_pred_lines.update({key: pred_relation})
-
-        assert len(test_lines) == len(prediction)
-
-        pred_lines = []
-        # pred_rel ==> rel_label  # 使用 alphabet 里面
-        # test_lines[i][head_start_index:head_end_index] ==> me1Text
-        # ==> em2Text
-        for test_line, pred in zip(test_lines, list(predictions.values())):
-
-            triples = []
-            for triple in pred:
-                triple = {}
-                triple["rel_text"] = ''
-                # em1Text
-                # em2Text
-
-            triples.append(triple)
-
-            test_line["relationMentions"] = triples
-
-        # 将 test_lines 保存到文件里面
-
-
-        # REVIEW use token replace the id_index
-        test_pred_lines = {} # 保存SPN训练的结果
+        # 将预测结果转化为SPN训练时的style，返回数组
+        test_pred_lines = {}# 保存prediction里面需要的部分
         for key, values in prediction.items():
             pred_relation = []
             for value in values:
                 pred_rel = value[0]
-                head_token = value[2]
-                tail_token = value[4]
-                pred_relation.append([pred_rel, head_token, tail_token])
+                head_start_index = value[2]
+                head_end_index = value[3]
+                tail_start_index = value[6]
+                tail_end_index = value[7]
+                pred_relation.append([pred_rel, head_start_index, head_end_index, tail_start_index, tail_end_index])
             test_pred_lines.update({key: pred_relation})
 
+        assert len(test_lines) == len(prediction)
 
-        """save_data(test_pred_lines, test_result_format) """
-        self.save_data(test_pred_lines, self.test_result_format)  # 保存到文件里面
+        with open(self.data_instance_path, 'r') as f:
+            id2rel = json.load(f)["instances"]
+
+        # 将预测结果与测试集对齐
+        pred_lines = []# 保存SPN style的预测结果
+        for test_line, pred in zip(test_lines, list(test_pred_lines.values())):
+
+            triples = []
+            pred_line = {}
+            # eg. pred = [[4, 55, 55, 55, 55], [0, 55, 55, 55, 55]]
+            for triple_pred in pred:
+
+                triple = {"em1Text": test_line["sentText"][triple_pred[1]:triple_pred[2]],
+                          "em2Text": test_line["sentText"][triple_pred[3]:triple_pred[4]],
+                          "label": id2rel[triple_pred[0]]}  # 保存单个三元组
+
+                # 实体从test_line的句子中截取
+                # 关系从alphabet中获取
+                triples.append(triple)
+
+            pred_line["id"] = test_line["id"]
+            pred_line["relationMentions"] = triples
+            # eg. pred_lines = [{"id": 0, "relationMentions": [{"em1Text": "美国", "em2Text": "中国", "label": "国籍}]}]
+            pred_lines.append(test_line)
+
+        # 去除origin_lines里面跟pred_lines重复的relationMentions项
+        # eg. origin_lines = [{"id": 0,"sentText":"xxxxxx", "relationMentions": [{"em1Text": "美国", "em2Text": "中国", "label": "国籍}]}]
+        with open(self.data_path, 'r') as f:
+            origin_lines = [json.loads(l) for l in f.readlines()]
+
+        diff_lines = []
+        for pred_line in pred_lines:
+            # 获取 pred_line 中的 relationMentions 字典
+            # pred_relation_mentions = [pred_lines["id"],pred_lines["relationMentions"]]
+            # 获取 origin_lines 中的 relationMentions 字典
+            diff_line = {}
+            for origin_line in origin_lines:
+                if origin_line["id"] == pred_line["id"]:
+                    diff_line["id"] = origin_line["id"]
+                    diff_line["relationMentions"] = {pred_line["relationMentions"] for "relationMentions" in pred_line.keys() if "relationMentions" not in origin_line or origin_line["relationMentions"] != pred_line["relationMentions"]}
+
+            # 保存 diff_line 到 diff_lines 里面
+            diff_lines.append(diff_line)
+
+        # 将 test_lines 保存到文件里面
+        self.save_data(diff_lines, self.test_result_format)
+
+        # """save_data(test_pred_lines, test_result_format) """
+        # self.save_data(test_pred_lines, self.test_result_format)  # 保存到文件里面
 
 
     def refine_and_extend(self):
@@ -173,6 +187,23 @@ class ModelTrainer:
         refine_knowledge_graph(self.test_result_format, self.test_result_refine, fast_mode=True)
 
         # 然后跟 self.data_path 里面的 relations 合并，合并后保存到 self.final_knowledge_graph 里面
-        # align
+        with open(self.data_path, 'r') as f:
+            origin_lines = json.load(f)
+
+        with open(self.test_result_refine, 'r') as f:
+            test_result_refine = json.load(f)
+
+        origin_res = []
+        # 将较短的test_result_refine的relationMentions合并到origin_lines里面
+        for test_result_refine_line in test_result_refine:
+
+            for origin_line in origin_lines:
+                if origin_line["id"] == test_result_refine_line["id"]:
+                    origin_line["relationMentions"] = set(origin_line["relationMentions"] + test_result_refine_line["relationMentions"])
+
+            origin_res.append(origin_line)
+
+        # 将origin_res保存到文件里面
+        self.save_data(origin_res, self.final_knowledge_graph)
 
         return self.final_knowledge_graph

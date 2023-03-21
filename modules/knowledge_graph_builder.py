@@ -11,17 +11,20 @@ from modules.model_trainer import ModelTrainer
 class KnowledgeGraphBuilder:
 
     def __init__(self, args) -> None:
+        """
+
+        文件的存储路径，以及一些参数的初始化
+
+        """
         self.data_dir = os.path.join("data", args.project)  # 存放生成的数据的地方
         self.text_path = os.path.join("data", "raw_data.txt") # 原始的文本文件
         self.base_kg_path = os.path.join(self.data_dir, "base.json") # 生成的三元组文件
         self.refined_kg_path = os.path.join(self.data_dir, "base_refined.json")# 筛选过后的三元组文件
 
+
         self.model_name_or_path = "bert-base-chinese" # 预训练模型的名字
-
         self.version = 0    # 会随着迭代次数的增加而增加
-
         self.kg_paths = [] # 一个数组，代表不同迭代版本的知识图谱
-
         self.GPU = "0"  # GPU 的编号
 
         os.makedirs(self.data_dir, exist_ok=True)
@@ -104,4 +107,4 @@ class KnowledgeGraphBuilder:
     def load(self, load_path=None):
         with open(load_path, "r", encoding="utf-8") as f:
             state = json.load(f)
-        self.__dict__.update(state)
+        self.__dict__.update(state)# 作用是将 state 中的键值对更新到 self.__dict__ 中

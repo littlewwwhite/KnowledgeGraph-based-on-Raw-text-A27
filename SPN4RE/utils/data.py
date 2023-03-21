@@ -1,6 +1,6 @@
-from SPN4RE.utils.alphabet import Alphabet
+from utils.alphabet import Alphabet
 import os, pickle, copy, sys, copy
-from SPN4RE.utils.functions import data_process
+from utils.functions import data_process
 try:
     from transformers import BertTokenizer
 except:
