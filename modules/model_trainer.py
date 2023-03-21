@@ -90,9 +90,10 @@ class ModelTrainer:
         # TODO work_dir 存在问题
         print(f"Running: $ {self.params}")
 
+        log_file = os.path.join(self.output_dir, "running_log.txt")
+        os.system(f"{self.params} > {log_file}")
 
-
-        os.system()
+        print("Done")
 
     def relation_align(self):
         """
@@ -141,7 +142,7 @@ class ModelTrainer:
             id2rel = json.load(f)["instances"]
 
         # 将预测结果与测试集对齐
-        pred_lines = []# 保存SPN style的预测结果
+        pred_lines = []  # 保存SPN style的预测结果
         for test_line, pred in zip(test_lines, list(test_pred_lines.values())):
 
             triples = []
@@ -183,7 +184,7 @@ class ModelTrainer:
         #     diff_lines.append(diff_line)
 
         diff_lines = []
-        for pred_line in pred_lies:
+        for pred_line in lines:
             origin_line = origin_lines[origin_line["id"]]
             assert origin_line["id"] == pred_line["id"]
 
