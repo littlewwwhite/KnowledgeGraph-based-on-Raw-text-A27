@@ -7,6 +7,8 @@ def check_input(prompt, keys):
         user_input = input(f"{prompt} > ")
         if user_input in keys:
             checked = True
+        else:
+            print("输入错误，请重新输入")
 
     return user_input
 
@@ -18,19 +20,28 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=False):
     """
 
     # 判断是否继续
+
+    print(f"源数据：{kg_path}")
+    print(f"筛选后数据：{refined_kg_path}\n")
+
     try:
-        with open(refined_kg_path, 'r') as f:
+        with open(refined_kg_path, 'r', encoding='UTF-8') as f:
             start_pos = len(f.readlines())
 
-        print(f"检测到已经筛选过 {start_pos} 条数据，将从第 {start_pos + 1} 条开始筛选")
+        print(f"检测到已经筛选过 {start_pos} 条数据，将从第 {start_pos + 1} 条开始筛选\n")
 
     except:
+        print("检测到没有筛选过数据，将从第 1 条开始筛选\n")
         start_pos = 0
 
-    with open(kg_path, 'w') as f_in, open(refined_kg_path, 'a+') as f_out:
+    with open(kg_path, 'r', encoding='UTF-8') as f_in, open(refined_kg_path, 'a+', encoding='UTF-8') as f_out:
         lines = f_in.readlines()
-        for line in lines[start_pos:]:
-            line = json.loads(f_in)
+
+        total = len(lines)
+
+        for pos in range(start_pos, total):
+            print(f"\n【 {pos+1}/{total} 】在这个句子中 >>>>>>>>")
+            line = json.loads(lines[pos])
 
             if fast_mode:
                 f_out.writelines(json.dumps(line, ensure_ascii=False) + "\n")
@@ -38,15 +49,29 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=False):
 
             refined_triples = []
             print(line["sentText"])
-            for triple in line["relations"]:
-                print(f"主体：{triple['em1Text']}, 关系：{triple['label']}，客体：{triple['em2Text']}")
-                user_input = check_input("是否构成关系？是则直接【回车】，否则输入【Z】")
-                if not user_input:
-                    refined_triples.append(triple)
+            for triple in line["relationMentions"]:
+                print(f"\n主体：【{triple['em1Text']}】, 关系：【{triple['label']}】，客体：【{triple['em2Text']}】")
+                user_input = check_input(
+                    prompt="是否构成关系？是则直接【Y】，否则输入【N】，输入【回车】暂时退出",
+                    keys=["Y", "y", "N", "n", ""])
 
-            line["relations"] = refined_triples
+                if user_input == "Y" or user_input == "y":
+                    refined_triples.append(triple)
+                elif user_input == "":
+                    print("退出筛选！")
+                    exit(0)
+
+            line["relationMentions"] = refined_triples
             f_out.writelines(json.dumps(line, ensure_ascii=False) + "\n")
+            print("已保存！\n")
 
     print("筛选完成！辛苦！")
 
     return refined_kg_path
+
+
+if __name__ == "__main__":
+    kg_path = "res_base_v4.json"
+    refined_kg_path = "res_base_v4_refine.json"
+
+    refine_knowledge_graph(kg_path, refined_kg_path)

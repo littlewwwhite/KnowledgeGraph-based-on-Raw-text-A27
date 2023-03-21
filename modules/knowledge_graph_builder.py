@@ -40,12 +40,14 @@ class KnowledgeGraphBuilder:
         # 判断是否已经训练过了，毕竟这个地方可能会出问题的
         if not os.path.exists(trainer.prediction):
             trainer.train_and_test()
+            self.save()
 
         trainer.relation_align()
         trainer.refine_and_extend()
-        self.version += 1
 
         self.kg_paths.append(trainer.final_knowledge_graph)
+        self.version += 1
+        self.save()
 
     def extend_ratio(self):
         """用于计算扩展的比例，如果扩展的比例小于 10%，则认为已经收敛"""
@@ -103,6 +105,10 @@ class KnowledgeGraphBuilder:
 
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(self.__dict__, f, ensure_ascii=False, indent=4)
+
+        print(f"Save state to {save_path}.")
+        print(f"Current version: {self.version}")
+        print(f"You can use --resume {save_path} to continue training.\n")
 
     def load(self, load_path=None):
         with open(load_path, "r", encoding="utf-8") as f:
