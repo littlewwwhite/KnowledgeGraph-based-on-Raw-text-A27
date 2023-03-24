@@ -1,6 +1,7 @@
 .idea
 .vscode
 .DS_Store
+*.pickle
 
 __pycache__
 ./SPN4RE/bert_pretrain/
