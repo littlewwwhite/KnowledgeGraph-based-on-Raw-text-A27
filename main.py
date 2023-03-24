@@ -26,7 +26,7 @@ if __name__ == "__main__":
     max_iteration = 10
 
     while kg_builder.version < max_iteration:
-        kg_builder.iteration() # 迭代过程中会自动保存
+        kg_builder.run_iteration() # 迭代过程中会自动保存
         extend_ratio = kg_builder.extend_ratio()
         print(f"Extend Ratio: {extend_ratio}")
 

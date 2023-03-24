@@ -71,15 +71,18 @@ class ModelTrainer:
         """将知识图谱数据(SPN_style)切分为三个文件"""
 
         with open(self.data_path, 'r') as f:
-            lines = [json.loads(line) for line in f.readlines()]
-            lines = random.shuffle(lines)
+            f.seek(0)
+            file_lines = f.readlines()
+            lines_num = random.sample([json.loads(line) for line in file_lines], len(file_lines))
 
         # dataset_length = len(lines)
         # 按照 4:1:5 的比例切分数据集，并分别保存到三个路径里面
+        assert lines_num is not None, "数据集为空"
 
-        train_lines = lines[:int(len(lines) * 0.4)]
-        valid_lines = lines[int(len(lines) * 0.4):int(len(lines) * 0.5)]
-        test_lines = lines[int(len(lines) * 0.5):]
+
+        train_lines = lines_num[:int(len(lines_num) * 0.4)]
+        valid_lines = lines_num[int(len(lines_num) * 0.4):int(len(lines_num) * 0.5)]
+        test_lines = lines_num[int(len(lines_num) * 0.5):]
         self.save_data(train_lines, self.train_file)
         self.save_data(valid_lines, self.valid_file)
         self.save_data(test_lines, self.test_file)
@@ -90,7 +93,7 @@ class ModelTrainer:
         # TODO work_dir 存在问题
         print(f"Running: $ {self.params}")
 
-        log_file = os.path.join(self.output_dir, "running_log.txt")
+        log_file = os.path.join(self.generated_data_directory, "running_log.txt")
         os.system(f"{self.params} > {log_file}")
 
         print("Done")
@@ -115,7 +118,10 @@ class ModelTrainer:
             test_lines.append(test_line)
 
         # 读取SPN的预测结果
-        with open(self.prediction, 'r', encoding='utf-8') as file:
+        # with open(self.prediction, 'r', encoding='utf-8') as file:
+        #     prediction = json.load(file)
+
+        with open("/data_F/zhijian/fuchuang-kg/SPN4RE/data/generated_data/model_param/prediction.json", 'r') as file:
             prediction = json.load(file)
 
         """
@@ -179,7 +185,6 @@ class ModelTrainer:
         #             diff_line["id"] = origin_line["id"]
         #             # diff_line["relationMentions"] = [pred_line["relationMentions"] for "relationMentions" in pred_line.keys() if "relationMentions" not in origin_line or origin_line["relationMentions"] != pred_line["relationMentions"]]
         #             diff_line["relationMentions"] = set(pred_line["relationMentions"]) - set(origin_line["relationMentions"])
-
         #     # 保存 diff_line 到 diff_lines 里面
         #     diff_lines.append(diff_line)
 

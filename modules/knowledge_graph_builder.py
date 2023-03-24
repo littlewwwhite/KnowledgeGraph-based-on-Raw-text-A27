@@ -17,23 +17,33 @@ class KnowledgeGraphBuilder:
 
         """
         self.data_dir = os.path.join("data", args.project)  # 存放生成的数据的地方
-        self.text_path = os.path.join("data", "raw_data.txt") # 原始的文本文件
+        self.text_path = os.path.join("data", "raw_data_test.txt") # 原始的文本文件
         self.base_kg_path = os.path.join(self.data_dir, "base.json") # 生成的三元组文件
         self.refined_kg_path = os.path.join(self.data_dir, "base_refined.json")# 筛选过后的三元组文件
-
+        self.filtered_kg_path = os.path.join(self.data_dir, "base_filtered.json") # 仅过滤无筛选的三元组文件
 
         self.model_name_or_path = "bert-base-chinese" # 预训练模型的名字
         self.version = 0    # 会随着迭代次数的增加而增加
         self.kg_paths = [] # 一个数组，代表不同迭代版本的知识图谱
-        self.GPU = "0"  # GPU 的编号
+        self.GPU = "1"  # GPU 的编号
 
         os.makedirs(self.data_dir, exist_ok=True)
 
 
     def run_iteration(self):
-        print(f"Start Runing Iteration v{self.version}")
+        """
+        运行一次迭代，包括：
+        1. 读取上一次迭代的结果，如果是第一次迭代，则读取 base_kg_path
+        2、训练，对齐和扩展
+        3、保存结果
+        """
 
-        cur_data_path = self.kg_path[-1]
+        print(f"Start Running Iteration v{self.version}")
+
+        # 如果是第一次迭代，那么就直接读取 base_kg_path
+
+
+        cur_data_path = self.kg_paths[-1] if self.version > 0 else self.base_kg_path
         cur_out_path = os.path.join(self.data_dir, f"iteration_v{self.version}")
         trainer = ModelTrainer(cur_data_path, cur_out_path, self.model_name_or_path)
 
@@ -85,19 +95,26 @@ class KnowledgeGraphBuilder:
         # 3. 喂给 UIE 并得到 relations，注意这里要保存句子的 id（从 0 开始算
         #    注意：这里如果发现已经存在了 self.base_kg_path，就跳过 UIE
         #    如果想要重新使用 UIE 抽取，删掉这个文件就行
+        all_items = uie_execute(texts)
         if not os.path.exists(self.base_kg_path):
-            all_items = uie_execute(texts)
+
             with open(self.base_kg_path, 'w') as f:
-                for item in all_items():
+                for item in all_items:
                     f.writelines(json.dumps(item, ensure_ascii=False) + "\n")
         else:
             print(f"Base KG already exists in {self.base_kg_path}, skip UIE.")
 
-        # 4. 算法验证，使用 bertTokenizer 检测一下实体是否还存在于句子里面
-        filtted_items = auto_filter(all_items, self.model_name_or_path)
+        # 4. 算法验证，使用 bertTokenizer 检测一下实体是否还存在于句子里面，并将过滤过的结果保存到 self.filtered_kg_path路径下
+        filtered_items = auto_filter(all_items, self.model_name_or_path)
+
+        # 将filtered_iterms保存到文件中
+        with open(self.filtered_kg_path, 'w') as f:
+            for item in filtered_items:
+                f.writelines(json.dumps(item, ensure_ascii=False) + "\n")
+
 
         # 5. 人工筛选并保存，因为需要加断点，所以需要一边做一边保存
-        refine_knowledge_graph(filtted_items, self.refined_kg_path, fast_mode=True)
+        refine_knowledge_graph(self.filtered_kg_path, self.refined_kg_path, fast_mode=True)
 
     def save(self, save_path=None):
         if save_path is None:

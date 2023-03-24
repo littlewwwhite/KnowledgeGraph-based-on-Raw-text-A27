@@ -16,7 +16,7 @@ def auto_filter(items, model_name_or_path):
         sent_tokens = tokenizer.tokenize(example["sentText"])
 
         relations = []
-        for relation in example["relations"]:
+        for relation in example["relationMentions"]:
             sub_tokens = tokenizer.tokenize(relation["em1Text"])
             obj_tokens = tokenizer.tokenize(relation["em2Text"])
 
@@ -61,6 +61,6 @@ def auto_filter(items, model_name_or_path):
                 "em2End": obj_end
             })
 
-        example["relations"] = relations # 覆盖原来的 relations
+        example["relationMentions"] = relations # 覆盖原来的 relations
 
     return items

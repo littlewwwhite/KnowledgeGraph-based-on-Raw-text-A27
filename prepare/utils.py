@@ -13,9 +13,10 @@ def check_input(prompt, keys):
     return user_input
 
 
-def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=False):
+def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=True):
     """用于手工对知识图谱进行筛选，也就是遍历 sentence 和 relations，然后手工筛选
-
+    kg_path: 原始三元组存储路径
+    refined_kg_path: 筛选后三元组存储路径
     fast_mode: 如果为 True，直接写入
     """
 
@@ -40,11 +41,12 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=False):
         total = len(lines)
 
         for pos in range(start_pos, total):
-            print(f"\n【 {pos+1}/{total} 】在这个句子中 >>>>>>>>")
+            print(f"【 {pos+1}/{total} 】在这个句子中 >>>>>>>>")
             line = json.loads(lines[pos])
 
             if fast_mode:
                 f_out.writelines(json.dumps(line, ensure_ascii=False) + "\n")
+                print("fast_mode已打开，数据不需要筛选，已保存！\n")
                 continue
 
             refined_triples = []

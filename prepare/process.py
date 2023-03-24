@@ -1,8 +1,7 @@
 import os
 from data.schema import schema_v2
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '3'
-# import paddle.inference as paddle_infer
+os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 from paddle import inference as paddle_infer
 from paddlenlp import Taskflow
 
@@ -10,15 +9,6 @@ from paddlenlp import Taskflow
 def paddle_relation_ie(content):
     relation_ie = Taskflow("information_extraction", schema=schema_v2.schema, batch_size=1)
     return relation_ie(content)
-
-# 定义一个函数，用于初始化GPU
-def gpu_init(gpu_id):
-    config = paddle_infer.Config("./mobilenet.pdmodel", "./mobilenet.pdiparams")
-    config.enable_use_gpu(gpu_id)
-    print("Use GPU is: {}".format(config.use_gpu())) # True
-    print("Init mem size is: {}".format(config.memory_pool_init_size_mb())) # 100
-    print("Init mem frac is: {}".format(config.fraction_of_gpu_memory_for_pool())) # 0.003
-    print("GPU device id is: {}".format(config.gpu_device_id())) # 0
 
 
 # 关系抽取并修改json文件
