@@ -33,3 +33,5 @@ if __name__ == "__main__":
         if extend_ratio < 0.1:
             print("Extend Ratio is too low, stop iteration.")
             break
+
+    print("done!")

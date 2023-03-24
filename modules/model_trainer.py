@@ -118,11 +118,11 @@ class ModelTrainer:
             test_lines.append(test_line)
 
         # 读取SPN的预测结果
-        # with open(self.prediction, 'r', encoding='utf-8') as file:
-        #     prediction = json.load(file)
-
-        with open("/data_F/zhijian/fuchuang-kg/SPN4RE/data/generated_data/model_param/prediction.json", 'r') as file:
+        with open(self.prediction, 'r', encoding='utf-8') as file:
             prediction = json.load(file)
+
+        # with open("/data_F/zhijian/fuchuang-kg/SPN4RE/data/generated_data/model_param/prediction.json", 'r') as file:
+        #     prediction = json.load(file)
 
         """
         test_line[9]["relationMentioned"] = func1(asdasd)
@@ -130,6 +130,7 @@ class ModelTrainer:
         """
 
         # 将预测结果转化为SPN训练时的style，返回数组
+        #
         test_pred_lines = {} # 保存prediction里面需要的部分
         for key, values in prediction.items():
             pred_relation = []
