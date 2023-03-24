@@ -1,7 +1,11 @@
 import torch.nn as nn
 import torch
-from transformers.modeling_bert import BertIntermediate, BertOutput, BertAttention, BertLayerNorm, BertSelfAttention
+# from transformers.modeling_bert import BertIntermediate, BertOutput, BertAttention, BertLayerNorm, BertSelfAttention
 
+# 上面的声明是旧版本的，新版本的声明如下：
+from transformers.models.bert.modeling_bert import BertIntermediate, BertOutput, BertAttention, BertSelfAttention
+
+BertLayerNorm = torch.nn.LayerNorm  # 新版本的移除了 BertLayerNorm，直接使用 torch.nn.LayerNorm
 
 class SetDecoder(nn.Module):
     def __init__(self, config, num_generated_triples, num_layers, num_classes, return_intermediate=False):
@@ -27,7 +31,7 @@ class SetDecoder(nn.Module):
         self.head_end_metric_3 = nn.Linear(config.hidden_size, 1, bias=False)
         self.tail_start_metric_3 = nn.Linear(config.hidden_size, 1, bias=False)
         self.tail_end_metric_3 = nn.Linear(config.hidden_size, 1, bias=False)
-        
+
         torch.nn.init.orthogonal_(self.head_start_metric_1.weight, gain=1)
         torch.nn.init.orthogonal_(self.head_end_metric_1.weight, gain=1)
         torch.nn.init.orthogonal_(self.tail_start_metric_1.weight, gain=1)
@@ -54,7 +58,7 @@ class SetDecoder(nn.Module):
             hidden_states = layer_outputs[0]
 
         class_logits = self.decoder2class(hidden_states)
-        
+
         head_start_logits = self.head_start_metric_3(torch.tanh(
             self.head_start_metric_1(hidden_states).unsqueeze(2) + self.head_start_metric_2(
                 encoder_hidden_states).unsqueeze(1))).squeeze()

@@ -1,7 +1,8 @@
 import torch, random, gc, json
 from torch import nn, optim
 from tqdm import tqdm
-from transformers import AdamW
+# from transformers import AdamW
+from torch.optim import AdamW
 from utils.average_meter import AverageMeter
 from utils.functions import formulate_gold
 from utils.metric import metric, num_metric, overlap_metric
@@ -56,6 +57,7 @@ class Trainer(nn.Module):
         batch_size = self.args.batch_size
         total_batch = train_num // batch_size + 1
         # result = self.eval_model(self.data.test_loader)
+        best_result_epoch = 0
         for epoch in range(self.args.max_epoch):
             # Train
             self.model.train()

@@ -26,8 +26,14 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=True):
     print(f"筛选后数据：{refined_kg_path}\n")
 
     try:
-        with open(refined_kg_path, 'r', encoding='UTF-8') as f:
-            start_pos = len(f.readlines())
+        with open(kg_path, 'r', encoding='UTF-8') as f_src, open(refined_kg_path, 'w', encoding='UTF-8') as f_refined:
+            start_pos = 0
+            kg_lines = f_src.readlines()
+            refined_lines = f_refined.readlines()
+            for i in range(len(refined_lines)):
+                if refined_lines[i]["id"] == kg_lines[i]["id"]:
+                    f_refined.writelines(json.dumps(line, ensure_ascii=False) + "\n")
+                    start_pos += 1
 
         print(f"检测到已经筛选过 {start_pos} 条数据，将从第 {start_pos + 1} 条开始筛选\n")
 
@@ -41,13 +47,14 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=True):
         total = len(lines)
 
         for pos in range(start_pos, total):
-            print(f"【 {pos+1}/{total} 】在这个句子中 >>>>>>>>")
             line = json.loads(lines[pos])
 
             if fast_mode:
                 f_out.writelines(json.dumps(line, ensure_ascii=False) + "\n")
                 print("fast_mode已打开，数据不需要筛选，已保存！\n")
                 continue
+
+            print(f"【 {pos+1}/{total} 】在这个句子中 >>>>>>>>")
 
             refined_triples = []
             print(line["sentText"])

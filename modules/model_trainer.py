@@ -3,12 +3,12 @@ import json
 import random
 import subprocess
 from prepare.utils import refine_knowledge_graph
-
+from prepare import cprint as ct
 
 
 class ModelTrainer:
 
-    def __init__(self, data_path, output_dir, model_name_or_path) -> None:
+    def __init__(self, data_path, output_dir, model_name_or_path, gpu) -> None:
         """ 用来训练 SPN 的一个类
 
         Args:
@@ -16,8 +16,9 @@ class ModelTrainer:
             output_dir: 保存测试之后的数据的文件夹
 
         """
+        self.gpu = gpu
         self.data_path = data_path
-        self.generated_data_directory = output_dir
+        self.generated_data_directory = output_dir + os.sep # fix SPN dir bug
         self.model_name_or_path = model_name_or_path
 
         os.makedirs(output_dir, exist_ok=True)
@@ -31,7 +32,7 @@ class ModelTrainer:
 
         # 这个是保存了关系的 id 与类别的映射表的文件alphabet.json
         self.data_instance_path = os.path.join(output_dir, 'alphabet.json')
-        self.final_knowledge_graph = os.path.join(output_dir, 'knowledge_graph.json}')
+        self.final_knowledge_graph = os.path.join(output_dir, 'knowledge_graph.json')
 
         self.split_data()
         self.params = self.generate_running_cmd()
@@ -47,7 +48,9 @@ class ModelTrainer:
         params += f" --train_file {self.train_file}"
         params += f" --valid_file {self.valid_file}"
         params += f" --test_file {self.test_file}"
+        params += f" --visible_gpu {self.gpu}"
         params += f" --generated_data_directory {self.generated_data_directory}"
+        params += f" --generated_param_directory {self.generated_data_directory}"
         return params
 
     def save_data(self, data, trg_path):
@@ -91,12 +94,11 @@ class ModelTrainer:
         """训练并测试这个模型，测试的预测结果会保存到 self.prediction 这个文件里面。"""
 
         # TODO work_dir 存在问题
-        print(f"Running: $ {self.params}")
+        print(ct.green(f"Running: $ {self.params}"))
 
-        log_file = os.path.join(self.generated_data_directory, "running_log.txt")
+        log_file = os.path.join(self.generated_data_directory, "running_log.log")
+        print(ct.purple(f"Log file: {log_file}"))
         os.system(f"{self.params} > {log_file}")
-
-        print("Done")
 
     def relation_align(self):
         """
@@ -106,28 +108,13 @@ class ModelTrainer:
         将预测得到的结果跟测试集对齐后去除重复的三元组，保存到 knowledge_graph.json 文件中
 
         """
-
-        # 读取50%的测试集
-        with open(self.test_file, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
-
-        # test_lines存放的是测试集的每一行
-        test_lines = []
-        for line in lines:
-            test_line = json.loads(line)
-            test_lines.append(test_line)
+        # 读取测试集
+        with open(self.test_file, 'r', encoding='utf-8') as f:
+            test_lines = [json.loads(line) for line in f.readlines()]
 
         # 读取SPN的预测结果
-        with open(self.prediction, 'r', encoding='utf-8') as file:
-            prediction = json.load(file)
-
-        # with open("/data_F/zhijian/fuchuang-kg/SPN4RE/data/generated_data/model_param/prediction.json", 'r') as file:
-        #     prediction = json.load(file)
-
-        """
-        test_line[9]["relationMentioned"] = func1(asdasd)
-        prediction: ["pred_rel", "rel_prob", "head_start_index", "head_end_index", "head_start_prob", "head_end_prob", "tail_start_index", "tail_end_index", "tail_start_prob", "tail_end_prob"]
-        """
+        with open(self.prediction, 'r', encoding='utf-8') as f:
+            prediction = json.load(f)
 
         # 将预测结果转化为SPN训练时的style，返回数组
         #
@@ -156,14 +143,13 @@ class ModelTrainer:
             pred_line = {}
             # eg. pred = [[4, 55, 55, 55, 55], [0, 55, 55, 55, 55]]
             for triple_pred in pred:
-
-                triple = {"em1Text": test_line["sentText"][triple_pred[1]:triple_pred[2]],
-                          "em2Text": test_line["sentText"][triple_pred[3]:triple_pred[4]],
+                assert triple_pred[1] <= triple_pred[2] and triple_pred[3] <= triple_pred[4], "预测的三元组有误"
+                triple = {"em1Text": test_line["sentText"][triple_pred[1]:triple_pred[2]+1],
+                          "em2Text": test_line["sentText"][triple_pred[3]:triple_pred[4]+1],
                           "label": id2rel[triple_pred[0]]}  # 保存单个三元组
 
-                # 实体从test_line的句子中截取
-                # 关系从alphabet中获取
-                triples.append(triple)
+                if triple not in triples and len(triple["em1Text"].split()) > 0 and len(triple["em2Text"].split()) > 0:
+                    triples.append(triple)
 
             pred_line["id"] = test_line["id"]
             pred_line["relationMentions"] = triples
@@ -175,23 +161,9 @@ class ModelTrainer:
         with open(self.data_path, 'r') as f:
             origin_lines = [json.loads(l) for l in f.readlines()]
 
-        # diff_lines = []
-        # for pred_line in pred_lines:
-        #     # 获取 pred_line 中的 relationMentions 字典
-        #     # pred_relation_mentions = [pred_lines["id"],pred_lines["relationMentions"]]
-        #     # 获取 origin_lines 中的 relationMentions 字典
-        #     diff_line = {}
-        #     for origin_line in origin_lines:
-        #         if origin_line["id"] == pred_line["id"]:
-        #             diff_line["id"] = origin_line["id"]
-        #             # diff_line["relationMentions"] = [pred_line["relationMentions"] for "relationMentions" in pred_line.keys() if "relationMentions" not in origin_line or origin_line["relationMentions"] != pred_line["relationMentions"]]
-        #             diff_line["relationMentions"] = set(pred_line["relationMentions"]) - set(origin_line["relationMentions"])
-        #     # 保存 diff_line 到 diff_lines 里面
-        #     diff_lines.append(diff_line)
-
         diff_lines = []
         for pred_line in pred_lines:
-            origin_line = origin_lines[origin_line["id"]]
+            origin_line = origin_lines[pred_line["id"]]
             assert origin_line["id"] == pred_line["id"]
 
             diff_line = pred_line.copy()
@@ -219,24 +191,19 @@ class ModelTrainer:
 
         # 然后跟 self.data_path 里面的 relations 合并，合并后保存到 self.final_knowledge_graph 里面
         with open(self.data_path, 'r') as f:
-            origin_lines = json.load(f)
+            origin_lines = [json.loads(l) for l in f.readlines()]
 
         with open(self.test_result_refine, 'r') as f:
-            test_result_refine = json.load(f)
+            test_result_refine = [json.loads(l) for l in f.readlines()]
 
-        origin_res = []
-        # 将较短的test_result_refine的relationMentions合并到origin_lines里面
-        for test_result_refine_line in test_result_refine:
-            origin_line = {}
-            for origin_line in origin_lines:
+
+        for origin_line in origin_lines:
+            for test_result_refine_line in test_result_refine:
                 if origin_line["id"] == test_result_refine_line["id"]:
-                    # 这里要用extend，而不是append，用后者会添加一个列表进去，而不是将列表里面的元素添加进去
                     origin_line["relationMentions"].extend(test_result_refine_line["relationMentions"])
-                    # origin_line["relationMentions"] = set(origin_line["relationMentions"] + test_result_refine_line["relationMentions"])
-
-            origin_res.append(origin_line)
+                    break
 
         # 将origin_res保存到文件里面
-        self.save_data(origin_res, self.final_knowledge_graph)
+        self.save_data(origin_lines, self.final_knowledge_graph)
 
         return self.final_knowledge_graph

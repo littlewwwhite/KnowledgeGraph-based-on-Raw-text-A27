@@ -2,20 +2,26 @@ import torch, collections
 
 
 def list_index(list1: list, list2: list) -> list:
-    start = [i for i, x in enumerate(list2) if x == list1[0]]
-    end = [i for i, x in enumerate(list2) if x == list1[-1]]
-    if len(start) == 1 and len(end) == 1:
-        return start[0], end[0]
-    else:
-        index = None
-        for i in start:
-            for j in end:
-                if i <= j:
-                    if list2[i:j+1] == list1:
-                        index = (i, j)
-                        break
-        assert index, f"can not index {list1} in {list2}."
-        return index[0], index[1]
+
+    index = None
+    try:
+        start = [i for i, x in enumerate(list2) if x == list1[0]]
+        end = [i for i, x in enumerate(list2) if x == list1[-1]]
+        if len(start) == 1 and len(end) == 1:
+            index = (start[0], end[0])
+        else:
+            for i in start:
+                for j in end:
+                    if i <= j:
+                        if list2[i:j+1] == list1:
+                            index = (i, j)
+                            break
+
+    except:
+        print(f"can not index `{list1}` in `{list2}`.")
+
+    assert index, f"can not index `{list1}` in `{list2}`."
+    return index[0], index[1]
 
 
 
