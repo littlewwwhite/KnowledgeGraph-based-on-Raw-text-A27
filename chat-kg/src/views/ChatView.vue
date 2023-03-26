@@ -91,7 +91,7 @@ const sendMessage = () => {
             return
           }
 
-          buffer = decoder.decode(value, { stream: true })
+          buffer += decoder.decode(value, { stream: true })
           console.log(buffer)
           const message = buffer.trim().split('\n').pop()
           // 尝试解析 message
@@ -99,6 +99,7 @@ const sendMessage = () => {
             const data = JSON.parse(message)
             updateLastReceivedMessage(data.updates.response, cur_res_id)
             state.history = data.history
+            buffer = ''
           } catch (e) {
             console.log(e)
           }
