@@ -32,7 +32,7 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=True):
             refined_lines = f_refined.readlines()
             for i in range(len(refined_lines)):
                 if refined_lines[i]["id"] == kg_lines[i]["id"]:
-                    f_refined.writelines(json.dumps(line, ensure_ascii=False) + "\n")
+                    f_refined.writelines(json.dumps(refined_lines[i], ensure_ascii=False) + "\n")
                     start_pos += 1
 
         print(f"检测到已经筛选过 {start_pos} 条数据，将从第 {start_pos + 1} 条开始筛选\n")
@@ -78,9 +78,9 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=True):
 
     return refined_kg_path
 
-
-if __name__ == "__main__":
-    kg_path = "res_base_v4.json"
-    refined_kg_path = "res_base_v4_refine.json"
-
-    refine_knowledge_graph(kg_path, refined_kg_path)
+#
+# if __name__ == "__main__":
+#     kg_path = "res_base_v4.json"
+#     refined_kg_path = "res_base_v4_refine.json"
+#
+#     refine_knowledge_graph(kg_path, refined_kg_path)
