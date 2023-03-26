@@ -40,7 +40,7 @@ class ModelTrainer:
     def generate_running_cmd(self):
         params = "python SPN4RE/main.py"
         params += f" --bert_directory {self.model_name_or_path}"
-        params += " --max_epoch 20"
+        params += " --max_epoch 5"
         params += " --max_span_length 10"
         params += " --num_generated_triples 15"
         params += " --max_grad_norm 2.5"
