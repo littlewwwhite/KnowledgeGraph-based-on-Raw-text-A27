@@ -1,7 +1,7 @@
 import argparse
 
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
 os.environ["MKL_THREADING_LAYER"] = "GNU"
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
         kg_builder.get_base_kg_from_txt()  # 预计用时：
 
     # iteration
-    max_iteration = 5
+    max_iteration = 10
 
     while kg_builder.version < max_iteration:
         kg_builder.run_iteration() # 迭代过程中会自动保存

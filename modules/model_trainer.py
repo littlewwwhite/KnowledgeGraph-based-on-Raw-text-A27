@@ -2,6 +2,7 @@ import os
 import json
 import random
 import subprocess
+from prepare.filter import auto_filter
 from prepare.utils import refine_knowledge_graph
 from prepare import cprint as ct
 
@@ -40,7 +41,7 @@ class ModelTrainer:
     def generate_running_cmd(self):
         params = "python SPN4RE/main.py"
         params += f" --bert_directory {self.model_name_or_path}"
-        params += " --max_epoch 5"
+        params += " --max_epoch 20"
         params += " --max_span_length 10"
         params += " --num_generated_triples 15"
         params += " --max_grad_norm 2.5"
@@ -112,6 +113,7 @@ class ModelTrainer:
         with open(self.test_file, 'r', encoding='utf-8') as f:
             test_lines = [json.loads(line) for line in f.readlines()]
 
+
         # 读取SPN的预测结果
         with open(self.prediction, 'r', encoding='utf-8') as f:
             prediction = json.load(f)
@@ -151,8 +153,11 @@ class ModelTrainer:
                 if triple not in triples and len(triple["em1Text"].split()) > 0 and len(triple["em2Text"].split()) > 0:
                     triples.append(triple)
 
+            # 另pred_lines的"id"的值和test_lines的"id"的值一样
+
             pred_line["id"] = test_line["id"]
             pred_line["relationMentions"] = triples
+            pred_line["sentText"] = test_line["sentText"]
             # eg. pred_lines = [{"id": 0, "relationMentions": [{"em1Text": "美国", "em2Text": "中国", "label": "国籍}]}]
             pred_lines.append(pred_line)
 
@@ -163,7 +168,7 @@ class ModelTrainer:
 
         diff_lines = []
         for pred_line in pred_lines:
-            origin_line = origin_lines[pred_line["id"]]
+            origin_line = origin_lines[pred_line["id"]]# 通过id找到对应的origin_line
             assert origin_line["id"] == pred_line["id"]
 
             diff_line = pred_line.copy()
@@ -177,6 +182,9 @@ class ModelTrainer:
 
             # 保存 diff_line 到 diff_lines 里面
             diff_lines.append(diff_line)
+
+        # 去除diff_lines里面不匹配的relationMentions项
+        diff_lines = auto_filter(diff_lines, "bert-base-chinese")
 
         # 将 test_lines 保存到文件里面
         self.save_data(diff_lines, self.test_result_format)

@@ -51,7 +51,7 @@ def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=True):
 
             if fast_mode:
                 f_out.writelines(json.dumps(line, ensure_ascii=False) + "\n")
-                print("fast_mode已打开，数据不需要筛选，已保存！\n")
+                print("fast_mode已打开，数据不需要筛选，已保存！")
                 continue
 
             print(f"【 {pos+1}/{total} 】在这个句子中 >>>>>>>>")
