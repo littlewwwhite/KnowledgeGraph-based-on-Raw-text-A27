@@ -60,12 +60,12 @@ if __name__ == '__main__':
     
     data_arg.add_argument('--dataset_name', type=str, default="NYT-exact")
     # data_arg.add_argument('--all_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/res_base_v4.json")
-    data_arg.add_argument('--train_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/train.json")
-    data_arg.add_argument('--valid_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/valid.json")
-    data_arg.add_argument('--test_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/test.json")
-    # data_arg.add_argument('--train_file', type=str, default="./data/NYT/exact_data/train.json")
-    # data_arg.add_argument('--valid_file', type=str, default="./data/NYT/exact_data/valid.json")
-    # data_arg.add_argument('--test_file', type=str, default="./data/NYT/exact_data/test.json")
+    # data_arg.add_argument('--train_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/train.json")
+    # data_arg.add_argument('--valid_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/valid.json")
+    # data_arg.add_argument('--test_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/test.json")
+    data_arg.add_argument('--train_file', type=str, default="./data/NYT/exact_data/train.json")
+    data_arg.add_argument('--valid_file', type=str, default="./data/NYT/exact_data/valid.json")
+    data_arg.add_argument('--test_file', type=str, default="./data/NYT/exact_data/test.json")
     
     # data_arg.add_argument('--dataset_name', type=str, default="NYT-partial")
     # data_arg.add_argument('--train_file', type=str, default="./data/NYT/casrel_data/new_train.json")

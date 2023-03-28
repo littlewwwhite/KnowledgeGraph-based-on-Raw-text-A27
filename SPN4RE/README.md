@@ -31,7 +31,7 @@ python -m main --bert_directory /data_F/zhijian/SPN4RE/bert_pretrain --num_gener
 ###  NYT Exact Match
 
 ```shell
-python -m main --bert_directory /data_F/zhijian/SPN4RE/bert_pretrain --num_generated_triples 15 --max_grad_norm 2.5 --na_rel_coef 0.25 --max_epoch 20 --max_span_length 10
+python -m main --bert_directory /data_F/zhijian/fuchuang-kg/SPN4RE/bert_pretrain --num_generated_triples 15 --max_grad_norm 2.5 --na_rel_coef 0.25 --max_epoch 20 --max_span_length 10 --visible_gpu 2
 ```
 or 
 ```shell

@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer
 
+
 def auto_filter(items, model_name_or_path):
     """用于自动过滤到一些错误的三元组，比如经过 bertTokenizer 之后，实体不在句子中了
 
@@ -13,6 +14,7 @@ def auto_filter(items, model_name_or_path):
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
 
     for example in items:
+
         sent_tokens = tokenizer.tokenize(example["sentText"])
 
         relations = []
