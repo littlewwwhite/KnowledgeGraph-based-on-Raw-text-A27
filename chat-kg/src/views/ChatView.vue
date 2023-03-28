@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="input-box">
-      <button @click="clearChat">Clear</button>
+      <button @click="clearChat"><clear-outlined /></button>
       <input
         type="text"
         class="user-input"
@@ -20,13 +20,14 @@
         @keydown.enter="sendMessage"
         placeholder="输入问题……"
       />
-      <button @click="sendMessage" :disabled="!state.inputText">Send</button>
+      <button @click="sendMessage" :disabled="!state.inputText"><send-outlined /></button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
+import { SendOutlined, ClearOutlined } from '@ant-design/icons-vue'
 
 const chatBox = ref(null)
 const state = reactive({
@@ -145,7 +146,9 @@ const clearChat = () => {
 
 onMounted(() => {
   state.inputText = '你好'
-  sendMessage()
+  setTimeout(() => {
+    sendMessage()
+  }, 100);
 })
 </script>
 
@@ -216,9 +219,9 @@ p.message-text {
 }
 
 img.message-image {
-  max-width: 50%;
-  max-height: 50%;
-  // object-fit: contain;
+  max-width: 300px;
+  max-height: 50vh;
+  object-fit: contain;
 }
 
 .input-box {

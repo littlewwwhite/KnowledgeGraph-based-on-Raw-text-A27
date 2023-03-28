@@ -10,8 +10,11 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^6.1.0",
     "axios": "^1.3.4",
+    "d3": "^7.8.3",
     "echarts": "^5.4.2",
+    "echarts-gl": "^2.0.9",
     "less": "^4.1.3",
     "pinia": "^2.0.32",
     "vue": "^3.2.47",
