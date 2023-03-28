@@ -17,12 +17,18 @@ def stream_predict(user_input, history=None):
     global model, tokenizer, init_history
     if not history:
         history = init_history
+
+    if "江南大学" in user_input:
+        image = r"https://news.jiangnan.edu.cn/__local/6/D9/98/C642DE3CDC7F72EC01C8A84FEE8_39252AC8_1D99C.jpg"
+    else:
+        image = None
+
     for response, history in model.stream_chat(tokenizer, user_input, history):
         updates = {}
         for query, response in history:
             updates["query"] = query
             updates["response"] = response
-        yield json.dumps({"history": history, "updates": updates}, ensure_ascii=False).encode('utf8') + b'\n'
+        yield json.dumps({"history": history, "updates": updates, "image": image}, ensure_ascii=False).encode('utf8') + b'\n'
 
 
 def start_model():
