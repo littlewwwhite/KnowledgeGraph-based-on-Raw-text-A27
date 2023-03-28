@@ -7,7 +7,8 @@
         class="message-box"
         :class="message.type"
       >
-        <p style="white-space: pre-line" class="message-text">{{ message.text }}</p>
+        <img v-if="message.filetype === 'image'" :src="message.url" class="message-image" alt="">
+        <p v-else style="white-space: pre-line" class="message-text">{{ message.text }}</p>
       </div>
     </div>
     <div class="input-box">
@@ -39,6 +40,20 @@ const appendMessage = (message, type) => {
     id: state.messages.length + 1,
     type,
     text: message
+  })
+  // 滚动到底部
+  setTimeout(() => {
+    chatBox.value.scrollTop = chatBox.value.scrollHeight - chatBox.value.clientHeight
+  }, 10)
+}
+
+
+const appendPicMessage = (pic, type) => {
+  state.messages.push({
+    id: state.messages.length + 1,
+    type,
+    filetype: "image",
+    url: pic
   })
   // 滚动到底部
   setTimeout(() => {
@@ -83,10 +98,16 @@ const sendMessage = () => {
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let buffer = ''
+      let pic;
       // 逐步读取响应文本
       const readChunk = () => {
         return reader.read().then(({ done, value }) => {
           if (done) {
+            if (pic) {
+              setTimeout(() => {
+                appendPicMessage(pic, 'received')
+              }, 500);
+            }
             console.log('Finished')
             return
           }
@@ -99,6 +120,7 @@ const sendMessage = () => {
             const data = JSON.parse(message)
             updateLastReceivedMessage(data.updates.response, cur_res_id)
             state.history = data.history
+            pic = data.image
             buffer = ''
           } catch (e) {
             console.log(e)
@@ -107,6 +129,7 @@ const sendMessage = () => {
           return readChunk()
         })
       }
+
 
       return readChunk()
     })
@@ -188,8 +211,14 @@ onMounted(() => {
   text-align: left;
 }
 
-.message-text {
+p.message-text {
   word-wrap: break-word;
+}
+
+img.message-image {
+  max-width: 50%;
+  max-height: 50%;
+  // object-fit: contain;
 }
 
 .input-box {
