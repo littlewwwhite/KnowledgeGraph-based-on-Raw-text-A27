@@ -1,5 +1,5 @@
 import os
-from data.schema import schema_v2
+from data.schema import schema_v3
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 from paddle import inference as paddle_infer
@@ -7,7 +7,7 @@ from paddlenlp import Taskflow
 
 # 定义一个函数，用于关系抽取
 def paddle_relation_ie(content):
-    relation_ie = Taskflow("information_extraction", schema=schema_v2.schema, batch_size=1)
+    relation_ie = Taskflow("information_extraction", schema=schema_v3.schema, batch_size=1)
     return relation_ie(content)
 
 
@@ -30,6 +30,7 @@ def rel_json(content):
 
 
 # 执行函数
+# 
 def uie_execute(texts):
 
     sent_id = 0

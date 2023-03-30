@@ -44,13 +44,13 @@ def auto_filter(items, model_name_or_path):
             if sub_start == -1:
                 print("subject not in sentText")
                 print("subject", sub_tokens)
-                print("sentText", sent_tokens)
+                # print("sentText", sent_tokens)
                 continue
 
             if obj_start == -1:
                 print("object not in sentText")
                 print("object", obj_tokens)
-                print("sentText", sent_tokens)
+                # print("sentText", sent_tokens)
                 continue
 
             relations.append({

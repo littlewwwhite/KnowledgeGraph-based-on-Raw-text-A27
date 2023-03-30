@@ -32,9 +32,9 @@ def shuffle(path):
 def split_data(path, train_path, valid_path, test_path):
     with open(path, 'r') as f:
         lines = f.readlines()
-    train_lines = lines[:int(len(lines) * 0.3)]
-    valid_lines = lines[int(len(lines) * 0.3):int(len(lines) * 0.5)]
-    test_lines = lines[int(len(lines) * 0.5):]
+    train_lines = lines[:int(len(lines) * 0.4)]
+    valid_lines = lines[int(len(lines) * 0.4):int(len(lines) * 0.6)]
+    test_lines = lines[int(len(lines) * 0.6):]
     with open(train_path, 'w') as f:
         f.writelines(train_lines)
     with open(valid_path, 'w') as f:
@@ -59,13 +59,13 @@ if __name__ == '__main__':
     data_arg = add_argument_group('Data')
     
     data_arg.add_argument('--dataset_name', type=str, default="NYT-exact")
-    # data_arg.add_argument('--all_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/res_base_v4.json")
-    # data_arg.add_argument('--train_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/train.json")
-    # data_arg.add_argument('--valid_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/valid.json")
-    # data_arg.add_argument('--test_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/test.json")
-    data_arg.add_argument('--train_file', type=str, default="./data/NYT/exact_data/train.json")
-    data_arg.add_argument('--valid_file', type=str, default="./data/NYT/exact_data/valid.json")
-    data_arg.add_argument('--test_file', type=str, default="./data/NYT/exact_data/test.json")
+    data_arg.add_argument('--all_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/base_filtered.json")
+    data_arg.add_argument('--train_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/train.json")
+    data_arg.add_argument('--valid_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/valid.json")
+    data_arg.add_argument('--test_file', type=str, default="/data_F/zhijian/fuchuang-kg/SPN4RE/data/zhijian_data_v1/test.json")
+    # data_arg.add_argument('--train_file', type=str, default="./data/NYT/exact_data/train.json")
+    # data_arg.add_argument('--valid_file', type=str, default="./data/NYT/exact_data/valid.json")
+    # data_arg.add_argument('--test_file', type=str, default="./data/NYT/exact_data/test.json")
     
     # data_arg.add_argument('--dataset_name', type=str, default="NYT-partial")
     # data_arg.add_argument('--train_file', type=str, default="./data/NYT/casrel_data/new_train.json")
@@ -112,6 +112,10 @@ if __name__ == '__main__':
 
 
     args, unparsed = get_args()
+
+    # shuffle(args.all_file)
+    # split_data(args.all_file, args.train_file, args.valid_file, args.test_file)
+
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.visible_gpu)
     for arg in vars(args):
         print(arg, ":",  getattr(args, arg))
