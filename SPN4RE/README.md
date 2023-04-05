@@ -25,13 +25,13 @@ Transformers: 2.6.0
 * 注意：需将命令行中的BERT_DIR替换为你机器中实际存储BERT的目录！！！
 
 ```shell
-python -m main --bert_directory /data_F/zhijian/SPN4RE/bert_pretrain --num_generated_triples 15 --na_rel_coef 1 --max_grad_norm 1 --max_epoch 100 --max_span_length 10
+python -m main --bert_directory /data_F/zhijian/fuchuang-kg/SPN4RE/bert_pretrain --num_generated_triples 15 --na_rel_coef 1 --max_grad_norm 1 --max_epoch 10 --max_span_length 10 --visible_gpu 
 ```
 
 ###  NYT Exact Match
 
 ```shell
-python -m main --bert_directory /data_F/zhijian/fuchuang-kg/SPN4RE/bert_pretrain --num_generated_triples 15 --max_grad_norm 2.5 --na_rel_coef 0.25 --max_epoch 20 --max_span_length 10 --visible_gpu 2
+python -m main --bert_directory /data_F/zhijian/fuchuang-kg/SPN4RE/bert_pretrain --num_generated_triples 15 --max_grad_norm 2.5 --na_rel_coef 0.25 --max_epoch 20 --max_span_length 10 --visible_gpu 3
 ```
 or 
 ```shell

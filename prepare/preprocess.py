@@ -5,11 +5,13 @@ from zhconv import convert
 def clean_to_sentence(file_path):
     with open(file_path, 'r', encoding='utf-8') as f_in:
         dirty_text = f_in.read()
-    # 去除非中英文和数字字符
-    pattern = re.compile('[^\u4e00-\u9fa5a-zA-Z0-9，。？！、‘’；《》]')
+    # 保留中文、英文、数字、字母、标点符号，替换换行符为分号，将繁体转换为简体
+    pattern = re.compile('[^\u4e00-\u9fa5a-zA-Z0-9\s，。？！、‘’；《》【】（）：\-/“”\n\t]')
     clean_text = pattern.sub('', dirty_text)
+    # clean_text = clean_text.replace('\n', '；')
     clean_text = convert(clean_text, 'zh-cn')
-    clean_sentences = re.split('[。？！]', clean_text)
+    split_pattern = re.compile('([。？！])')
+    clean_sentences = split_pattern.split(clean_text)
     return clean_sentences
 
 # 将文本按照句子分割
@@ -30,5 +32,3 @@ def process_text(input_file, max_line_length):
     sentences = clean_to_sentence(input_file)
     formatted_output = add_sentences(sentences, max_line_length)
     return formatted_output
-
-

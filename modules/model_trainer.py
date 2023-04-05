@@ -41,7 +41,7 @@ class ModelTrainer:
     def generate_running_cmd(self):
         params = "python SPN4RE/main.py"
         params += f" --bert_directory {self.model_name_or_path}"
-        params += " --max_epoch 20"
+        params += " --max_epoch 10"
         params += " --max_span_length 10"
         params += " --num_generated_triples 15"
         params += " --max_grad_norm 2.5"
@@ -84,9 +84,9 @@ class ModelTrainer:
         assert lines_num is not None, "数据集为空"
 
 
-        train_lines = lines_num[:int(len(lines_num) * 0.4)]
-        valid_lines = lines_num[int(len(lines_num) * 0.4):int(len(lines_num) * 0.5)]
-        test_lines = lines_num[int(len(lines_num) * 0.5):]
+        train_lines = lines_num[:int(len(lines_num) * 0.5)]
+        valid_lines = lines_num[int(len(lines_num) * 0.5):int(len(lines_num) * 0.7)]
+        test_lines = lines_num[int(len(lines_num) * 0.7):]
         self.save_data(train_lines, self.train_file)
         self.save_data(valid_lines, self.valid_file)
         self.save_data(test_lines, self.test_file)

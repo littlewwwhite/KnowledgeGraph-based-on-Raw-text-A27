@@ -1,0 +1,13 @@
+{
+    "data_dir": "data/project_v1",
+    "text_path": "data/raw_data.txt",
+    "base_kg_path": "data/project_v1/base.json",
+    "refined_kg_path": "data/project_v1/base_refined.json",
+    "filtered_kg_path": "data/project_v1/base_filtered.json",
+    "model_name_or_path": "bert-base-chinese",
+    "version": 1,
+    "kg_paths": [
+        "data/project_v1/iteration_v0/knowledge_graph.json"
+    ],
+    "gpu": "1"
+}
