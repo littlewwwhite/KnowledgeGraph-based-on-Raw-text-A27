@@ -22,6 +22,12 @@ def auto_filter(items, model_name_or_path):
             sub_tokens = tokenizer.tokenize(relation["em1Text"])
             obj_tokens = tokenizer.tokenize(relation["em2Text"])
 
+            if len(sub_tokens) == 0 or len(obj_tokens) == 0:
+                continue
+
+            if len(sub_tokens) > 15 or len(obj_tokens) > 15:
+                continue
+
             # 1. 判断 subject 是否在句子中，长短数组匹配问题
             sub_start = -1
             sub_end = -1
