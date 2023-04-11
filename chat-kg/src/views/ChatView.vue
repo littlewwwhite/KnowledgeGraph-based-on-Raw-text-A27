@@ -31,8 +31,11 @@
     <div class="info">
       <h1>{{ info.title }}</h1>
       <p class="description" >{{ info.description }}</p>
-      <a-image v-if="info.image" :src="info.image" :alt="info.title"/>
-      <!-- <p>三元组数量：{{ info.triples.length }}</p> -->
+      <!-- 判断 info.image 是不是空，然后判断是不是数组，如果是数组则使用 v-for -->
+      <img v-if="info.image && typeof info.image === 'string'" :src="info.image" class="info-image" alt="">
+      <div v-else-if="info.image && Array.isArray(info.image)">
+        <img v-for="(img, index) in info.image" :key="index" :src="img" class="info-image" alt="">
+      </div>
       <p v-show="info.graph?.nodes.length > 0"><b>关联图谱</b></p>
       <div id="lite_graph" v-show="info.graph?.nodes.length > 0"></div>
       <a-collapse v-model:activeKey="state.activeKey" v-if="info.graph?.sents.length > 0" accordion>
@@ -67,7 +70,7 @@ const state = reactive({
 const default_info = {
   title: '知识图谱问答 ChatKG',
   description: '由江南大学人工智能与计算机学院开发的基于知识图谱的问答系统，支持多轮对话，支持外部信息检索',
-  image: 'https://news.jiangnan.edu.cn/__local/6/D9/98/C642DE3CDC7F72EC01C8A84FEE8_39252AC8_1D99C.jpg',
+  image: ['https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230412005841.png', 'https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230412010515.png'],
   graph: null,
 }
 
@@ -236,7 +239,7 @@ const graphOption = (graph) => {
 
 const sendDeafultMessage = () => {
   setTimeout(() => {
-    appendMessage('你好？我是 ChatKG，有什么可以帮你？', 'received')
+    appendMessage('你好？我是 ChatKG，有什么可以帮你？😊', 'received')
   }, 1000);
 }
 
@@ -271,8 +274,8 @@ onMounted(() => {
   flex-grow: 1;
   margin: 0 auto;
   flex-direction: column;
-  height: calc(100vh - 200px);
-  background: #f2f2f2;
+  height: calc(100vh - 135px);
+  background: #f5f5f5;
   // border: 4px solid #ccc;
   border-radius: 8px;
   box-shadow: 0px 0.3px 0.9px rgba(0, 0, 0, 0.12), 0px 0.6px 2.3px rgba(0, 0, 0, 0.1),
@@ -316,14 +319,14 @@ onMounted(() => {
   color: white;
   background-color: #efefef;
   // background: linear-gradient(90deg, #006880 10.79%, #005366 87.08%);
-  background: linear-gradient(90deg, #555 10.79%, #333 87.08%);
+  background: linear-gradient(90deg, #40788c 10.79%, #005f77 87.08%);
   // background-color: #333;
   align-self: flex-end;
 }
 
 .message-box.received {
   color: #111111;
-  background-color: #f7f7f7;
+  background-color: #ffffff;
   text-align: left;
 }
 
@@ -354,7 +357,7 @@ input.user-input {
   border-radius: 8px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.1);
   font-size: 1.2rem;
-  margin: 0 1rem;
+  margin: 0 0.6rem;
   color: #111111;
   font-size: 16px;
   // line-height: 22px;
@@ -375,10 +378,8 @@ input.user-input {
 div.info {
   width: 400px;
   min-width: 400px;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 135px);
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
   flex-grow: 0;
 
   // 平滑滚动
@@ -406,19 +407,19 @@ div.info {
     // text-align: center;
   }
 
-  .ant-image {
+  img {
     width: 100%;
-    height: 100%;
+    height: fit-content;
     object-fit: contain;
     border-radius: 8px;
     overflow: hidden;
-    overflow-y: hidden
+    margin-bottom: 0.5rem;
   }
 
   #lite_graph {
     width: 400px;
     height: 300px;
-    background: #f2f2f2;
+    background: #f5f5f5;
     // border: 4px solid #ccc;
     border-radius: 8px;
     margin-bottom: 1rem;

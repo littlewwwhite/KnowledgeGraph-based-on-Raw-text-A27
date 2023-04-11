@@ -13,7 +13,7 @@ console.log(route)
 <template>
   <header class="header">
     <nav class="nav">
-      <RouterLink to="/" class="nav-item">主页</RouterLink>
+      <RouterLink to="/" class="nav-item" active-class="active">主页</RouterLink>
       <RouterLink to="/chat" class="nav-item" active-class="active">问答</RouterLink>
       <RouterLink to="/kg" class="nav-item" active-class="active">图谱</RouterLink>
       <RouterLink to="/about" class="nav-item" active-class="active">关于</RouterLink>
@@ -39,6 +39,8 @@ console.log(route)
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  height: 45px;
 }
 
 .nav-item {
@@ -53,12 +55,24 @@ console.log(route)
 }
 
 .nav-item:hover {
-  background-color: #eee;
+  background-color: #e2eef3;
   cursor: pointer;
 }
 
 .nav-item.active {
-  background-color: #333;
-  color: #fff;
+  font-weight: bold;
+  color: #005f77;
+}
+
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 2rem;
+  // left: 0;
+  height: 2px;
+  background-color: #005f77;
+  margin-top: 4px;
+  // z-index: 10;
 }
 </style>
