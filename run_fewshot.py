@@ -19,8 +19,8 @@ formatted_output = process_text(input_file, max_line_length)
 with open("data/clean_data_res_doc2_300epoch.txt", "w", encoding='utf-8') as f:
     f.write(json.dumps(formatted_output, ensure_ascii=False))
 
-# new_items = uie_execute(formatted_output)
+new_items = uie_execute(formatted_output)
 
-# with open("data/clean_data_res_doc2_300epoch.json", "w", encoding='utf-8') as f:
-#     f.write(json.dumps(new_items, ensure_ascii=False))
+with open("data/clean_data_res_doc2_300epoch.json", "w", encoding='utf-8') as f:
+    f.write(json.dumps(new_items, ensure_ascii=False))
 

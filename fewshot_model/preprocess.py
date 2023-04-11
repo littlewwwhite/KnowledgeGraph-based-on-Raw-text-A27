@@ -8,6 +8,8 @@ def clean_to_sentence(file_path):
     # 去除非中英文和数字字符
     dirty_text = dirty_text.replace('彳艮', '很')
     dirty_text = dirty_text.replace('\n', '；')
+    dirty_text = dirty_text.replace('\t', '；')
+    dirty_text = "".join(dirty_text.split())
 
     pattern = re.compile('[^\u4e00-\u9fa5a-zA-Z0-9，。？！、‘’；“”《》]')
     clean_text = pattern.sub('', dirty_text)
@@ -15,10 +17,7 @@ def clean_to_sentence(file_path):
     clean_text = clean_text.replace(' ', '')
     clean_text = clean_text.replace('。 ', '。')
     clean_text = clean_text.replace('。；', '。')
-    clean_sentences = re.split('[。]', clean_text)
-    # 添加句号
-    clean_sentences = [sentence + '。' for sentence in clean_sentences]
-    clean_sentences = [sentence.replace("。 ", "。") for sentence in clean_sentences]
+    clean_sentences = [sent + "。" for sent in clean_text.split('。')]
     return clean_sentences
 
 # 将文本按照句子分割
@@ -29,7 +28,7 @@ def add_sentences(sentences, max_line_length=480):
         if len(current_line) + len(sentence) + 1 > max_line_length:
             output.append(current_line.strip())
             current_line = ''
-        current_line += sentence + ' '
+        current_line += sentence
     if current_line:
         output.append(current_line.strip())
     return output
