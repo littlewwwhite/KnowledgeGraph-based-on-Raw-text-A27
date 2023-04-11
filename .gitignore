@@ -6,6 +6,8 @@
 __pycache__
 ./SPN4RE/bert_pretrain/
 
+test*.ipynb
+
 # Logs
 logs
 *.log

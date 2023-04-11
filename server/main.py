@@ -1,6 +1,8 @@
 import os
 from app import apps
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
 from app.utils.chat_glm import start_model
 
 

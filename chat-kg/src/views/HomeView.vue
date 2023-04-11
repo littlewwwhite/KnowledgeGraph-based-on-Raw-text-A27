@@ -11,7 +11,7 @@ import { ref } from 'vue'
 
 const title = ref('My ChatKG 🎈')
 const description = ref('一个简单的知识图谱聊天机器人')
-const image = ref('https://via.placeholder.com/700x400')
+const image = ref('https://news.jiangnan.edu.cn/__local/6/D9/98/C642DE3CDC7F72EC01C8A84FEE8_39252AC8_1D99C.jpg')
 </script>
 
 <style scoped>
