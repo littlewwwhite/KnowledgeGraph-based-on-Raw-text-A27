@@ -1,12 +1,25 @@
 
-image_pair = {
-    "江南大学": "https://news.jiangnan.edu.cn/__local/6/D9/98/C642DE3CDC7F72EC01C8A84FEE8_39252AC8_1D99C.jpg"
-}
+class ImageSearcher:
 
-def image_search(query):
+    def __init__(self):
+        self.image_pair = {
+            "江南大学": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411102806.png",
+            "军舰": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411102751.png",
+            "消防手套": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411101854.png",
+            "灭火剂": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411104044.png",
+            "灭火": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411102650.png",
+            "潜水装具": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411102343.png",
+            "消防水枪": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411102528.png",
+            "潜水": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411104255.png",
+            "消防呼吸器": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411103758.png",
+            "损管尺": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411104425.png",
+            "喷射泵": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411104459.png",
+            "空气泡沫喷漆": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411104707.png"
+        }
 
-    for key, value in image_pair.items():
-        if key in query:
-            return value
+    def search(self, query):
+        for key, value in self.image_pair.items():
+            if key in query:
+                return value
 
-    return None
+        return None
