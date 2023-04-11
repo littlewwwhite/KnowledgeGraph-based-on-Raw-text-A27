@@ -32,14 +32,14 @@
       <h1>{{ info.title }}</h1>
       <p class="description" >{{ info.description }}</p>
       <a-image v-if="info.image" :src="info.image" :alt="info.title"/>
-      <!-- <p>三元组数量：{{ info.triples.length }}</p>
-      <p>句子数量：{{ info.sents.length }}</p> -->
+      <!-- <p>三元组数量：{{ info.triples.length }}</p> -->
+      <p v-show="info.graph?.nodes.length > 0"><b>关联图谱</b></p>
       <div id="lite_graph" v-show="info.graph?.nodes.length > 0"></div>
       <a-collapse v-model:activeKey="state.activeKey" v-if="info.graph?.sents.length > 0" accordion>
         <a-collapse-panel
           v-for="(sent, index) in info.graph.sents"
           :key="index"
-          :header="'相关句子 ' + (index + 1)"
+          :header="'相关描述 ' + (index + 1)"
           :show-arrow="false"
           ghost
         >
@@ -142,16 +142,17 @@ const sendMessage = () => {
       const readChunk = () => {
         return reader.read().then(({ done, value }) => {
           if (done) {
-            info.image = pic
-            info.graph = graph
-            // 处理维基百科的内容
-            info.title = wiki?.title
-            info.description = wiki?.summary
-            if (info.graph) {
-              myChart.setOption(graphOption(info.graph));
-            }
             console.log('Finished')
             return
+          }
+
+          info.image = pic
+          info.graph = graph
+          // 处理维基百科的内容
+          info.title = wiki?.title
+          info.description = wiki?.summary
+          if (info.graph) {
+            myChart.setOption(graphOption(info.graph));
           }
 
           buffer += decoder.decode(value, { stream: true })
@@ -420,6 +421,7 @@ div.info {
     background: #f2f2f2;
     // border: 4px solid #ccc;
     border-radius: 8px;
+    margin-bottom: 1rem;
     box-shadow: 0px 0.3px 0.9px rgba(0, 0, 0, 0.12), 0px 0.6px 2.3px rgba(0, 0, 0, 0.1),
       0px 1px 5px rgba(0, 0, 0, 0.08);
   }

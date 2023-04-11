@@ -10,6 +10,7 @@ class Ner:
 
     def get_entities(self, text, etype=None):
         '''获取句子中指定类型的实体
+
         Args:
             text: 句子
             etype: 实体类型

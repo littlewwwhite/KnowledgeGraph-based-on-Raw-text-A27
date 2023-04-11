@@ -23,6 +23,8 @@ dist-ssr
 coverage
 *.local
 
+weights
+
 /cypress/videos/
 /cypress/screenshots/
 

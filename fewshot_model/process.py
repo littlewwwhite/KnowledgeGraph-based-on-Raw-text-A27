@@ -2,16 +2,14 @@ import os
 from data.schema import schema_v3
 from paddlenlp import Taskflow
 
-# 定义一个函数，用于关系抽取
-def paddle_relation_ie(content):
-    relation_ie = Taskflow("information_extraction", schema=schema_v3.schema,task_path="/data_F/zhijian/paddlenlp/PaddleNLP-model_zoo-uie/checkpoint/model_best_41line_100ep")
-    return relation_ie(content)
+
+relation_ie = Taskflow("information_extraction", schema=schema_v3.schema, task_path="/fast/zwj/fuchuang-kg/weights/model_41_100")
 
 
 # 关系抽取并修改json文件
 def rel_json(content):
     all_relations = [] # 定义一个空列表，用于存储每个chapter的关系信息
-    res_relation = paddle_relation_ie(content)  # 传入文本进行关系识别
+    res_relation = relation_ie(content)  # 传入文本进行关系识别
     for rel in res_relation:
         for sub_type, sub_rel in rel.items():
             for sub in sub_rel:

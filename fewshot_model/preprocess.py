@@ -6,12 +6,19 @@ def clean_to_sentence(file_path):
     with open(file_path, 'r', encoding='utf-8') as f_in:
         dirty_text = f_in.read()
     # 去除非中英文和数字字符
-    # TODO 将换行更改为 ；符号
-    #
-    pattern = re.compile('[^\u4e00-\u9fa5a-zA-Z0-9，。？！、‘’；《》]')
+    dirty_text = dirty_text.replace('彳艮', '很')
+    dirty_text = dirty_text.replace('\n', '；')
+
+    pattern = re.compile('[^\u4e00-\u9fa5a-zA-Z0-9，。？！、‘’；“”《》]')
     clean_text = pattern.sub('', dirty_text)
-    clean_text = convert(clean_text, 'zh-cn')
-    clean_sentences = re.split('[。？！]', clean_text)
+    clean_text = convert(clean_text, 'zh-cn') # 作用是将繁体转换为简体
+    clean_text = clean_text.replace(' ', '')
+    clean_text = clean_text.replace('。 ', '。')
+    clean_text = clean_text.replace('。；', '。')
+    clean_sentences = re.split('[。]', clean_text)
+    # 添加句号
+    clean_sentences = [sentence + '。' for sentence in clean_sentences]
+    clean_sentences = [sentence.replace("。 ", "。") for sentence in clean_sentences]
     return clean_sentences
 
 # 将文本按照句子分割
