@@ -160,7 +160,7 @@ onMounted(() => {
   justify-content: start;
   align-items: center;
   height: 100%;
-  background: #f2f2f2;
+  background: #f5f5f5;
   border-radius: 8px;
 }
 

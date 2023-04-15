@@ -21,6 +21,10 @@ formatted_output = process_text(input_file, max_line_length)
 
 new_items = uie_execute(formatted_output)
 
+<<<<<<< HEAD
 with open("data/clean_data_res_41lines_100epoch.json", "w", encoding='utf-8') as f:
+=======
+with open("data/clean_data_res_doc2_300epoch.json", "w", encoding='utf-8') as f:
+>>>>>>> origin/main
     f.write(json.dumps(new_items, ensure_ascii=False))
 

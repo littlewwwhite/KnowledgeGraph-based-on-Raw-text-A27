@@ -28,12 +28,12 @@ def stream_predict(user_input, history=None):
     if not history:
         history = init_history
 
-    ref = "参考资料："
+    ref = ""
 
     # 获取实体
     graph = {}
     entities = []
-    entities = ner.get_entities(user_input, etype="物体类")
+    entities = ner.get_entities(user_input, etypes=["物体类", "人物类", "地点类", "组织机构类", "事件类", "世界地区类", "术语类"])
     print("entities: ", entities)
 
     # 获取实体的三元组
@@ -65,7 +65,11 @@ def stream_predict(user_input, history=None):
         }
 
     if model is not None:
-        chat_input = ref + "；根据上面资料，回答下面问题：" + user_input
+        if ref:
+            chat_input = f"参考资料：{ref}；根据上面资料，回答下面问题：{user_input}"
+        else:
+            chat_input = user_input
+
         for response, history in model.stream_chat(tokenizer, chat_input, history):
             updates = {}
             for query, response in history:
