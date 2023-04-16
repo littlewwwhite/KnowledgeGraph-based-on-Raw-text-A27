@@ -2,7 +2,6 @@ import wikipediaapi
 
 from opencc import OpenCC
 
-
 cc = OpenCC('s2t')
 
 class WikiSearcher(object):

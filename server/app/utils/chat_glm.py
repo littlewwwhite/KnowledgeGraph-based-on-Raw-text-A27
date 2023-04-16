@@ -5,7 +5,7 @@ from transformers import AutoTokenizer, AutoModel
 from app.utils.image_searcher import ImageSearcher
 from app.utils.query_wiki import WikiSearcher
 from app.utils.ner import Ner
-from app.views.graph import search_node_item
+from app.utils.graph_utils import convert_graph_to_triples, search_node_item
 
 model = None
 tokenizer = None
@@ -37,16 +37,24 @@ def stream_predict(user_input, history=None):
     print("entities: ", entities)
 
     # 获取实体的三元组
+    triples = []
     for entity in entities:
         graph = search_node_item(entity, graph if graph else None)
 
-    print("user_input: ", user_input)
-    # graph = search_node_item(user_input)
+        if graph:
+            triples += convert_graph_to_triples(graph, entity)
+
+    triples_str = ""
+    for t in triples:
+        triples_str += f"({t[0]} {t[1]} {t[2]})；"
+
+    if triples_str:
+        ref += f"三元组信息：{triples_str}；"
+
 
     image = image_searcher.search(user_input)
-    # wiki = wiki_searcher.search(user_input)
 
-    for ent in [user_input] + entities:
+    for ent in entities + [user_input]:
         wiki = wiki_searcher.search(ent)
         if wiki is not None:
             break
@@ -66,11 +74,18 @@ def stream_predict(user_input, history=None):
 
     if model is not None:
         if ref:
-            chat_input = f"参考资料：{ref}；根据上面资料，回答下面问题：{user_input}"
+            chat_input = f"\n===参考资料===：\n{ref}；\n\n根据上面资料，用简洁且准确的话回答下面问题：\n{user_input}"
         else:
             chat_input = user_input
 
-        for response, history in model.stream_chat(tokenizer, chat_input, history):
+        clean_history = []
+        for user_input, response in history:
+            if "===参考资料===" in user_input:
+                user_input = user_input.split("===参考资料===")[0]
+            clean_history.append((user_input, response))
+
+        print("chat_input: ", chat_input)
+        for response, history in model.stream_chat(tokenizer, chat_input, clean_history):
             updates = {}
             for query, response in history:
                 updates["query"] = query

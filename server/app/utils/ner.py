@@ -3,7 +3,7 @@ from paddlenlp import Taskflow
 
 class Ner:
     def __init__(self):
-        self.model = Taskflow("ner")
+        self.model = Taskflow("ner", task_path="weights/model_41_100")
 
     def predict(self, text):
         return self.model(text)

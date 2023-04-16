@@ -69,7 +69,7 @@ const state = reactive({
 
 const default_info = {
   title: '知识图谱问答 ChatKG',
-  description: '由江南大学人工智能与计算机学院开发的基于知识图谱的问答系统，支持多轮对话，支持外部信息检索',
+  description: '由江南大学先进技术研究院开发的基于知识图谱的问答系统，支持多轮对话，支持外部信息检索',
   image: ['https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230412005841.png', 'https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230412010515.png'],
   graph: null,
 }
@@ -94,15 +94,15 @@ const appendMessage = (message, type) => {
 }
 
 
-const appendPicMessage = (pic, type) => {
-  state.messages.push({
-    id: state.messages.length + 1,
-    type,
-    filetype: "image",
-    url: pic
-  })
-  scrollToBottom()
-}
+// const appendPicMessage = (pic, type) => {
+//   state.messages.push({
+//     id: state.messages.length + 1,
+//     type,
+//     filetype: "image",
+//     url: pic
+//   })
+//   scrollToBottom()
+// }
 
 const updateLastReceivedMessage = (message, id) => {
   const lastReceivedMessage = state.messages.find((message) => message.id === id)
@@ -121,7 +121,7 @@ const updateLastReceivedMessage = (message, id) => {
 const sendMessage = () => {
   if (state.inputText.trim()) {
     appendMessage(state.inputText, 'sent')
-    appendMessage('正在回答……', 'received')
+    appendMessage('检索中……', 'received')
     const user_input = state.inputText
     const cur_res_id = state.messages[state.messages.length - 1].id
     state.inputText = ''
