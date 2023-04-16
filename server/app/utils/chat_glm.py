@@ -41,10 +41,10 @@ def stream_predict(user_input, history=None):
         graph = search_node_item(entity, graph if graph else None)
 
     print("user_input: ", user_input)
-    graph = search_node_item(user_input)
+    # graph = search_node_item(user_input)
 
     image = image_searcher.search(user_input)
-    wiki = wiki_searcher.search(user_input)
+    # wiki = wiki_searcher.search(user_input)
 
     for ent in [user_input] + entities:
         wiki = wiki_searcher.search(ent)

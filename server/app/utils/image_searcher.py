@@ -14,7 +14,14 @@ class ImageSearcher:
             "消防呼吸器": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411103758.png",
             "损管尺": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411104425.png",
             "喷射泵": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411104459.png",
-            "空气泡沫喷漆": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411104707.png"
+            "空气泡沫喷漆": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411104707.png",
+            "火灾": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411214012.png",
+            "潜水员": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411214038.png",
+            "测深仪": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411214124.png",
+            "舰艇声呐": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411214203.png",
+            "潜水呼吸装置": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411214221.png",
+            "舰艇发动机": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411214326.png",
+            "鲨鱼": "https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230411214352.png",
         }
 
     def search(self, query):
