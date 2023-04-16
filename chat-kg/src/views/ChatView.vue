@@ -69,8 +69,8 @@ const state = reactive({
 
 const default_info = {
   title: '知识图谱问答 ChatKG',
-  description: '由江南大学先进技术研究院开发的基于知识图谱的问答系统，支持多轮对话，支持外部信息检索',
-  image: ['https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230412005841.png', 'https://xerrors.oss-cn-shanghai.aliyuncs.com/imgs/20230412010515.png'],
+  description: '基于特定领域知识图谱的问答系统，支持多轮对话，支持外部信息检索',
+  image: ['chat-kg/src/assets/chatgraph.png'],
   graph: null,
 }
 
