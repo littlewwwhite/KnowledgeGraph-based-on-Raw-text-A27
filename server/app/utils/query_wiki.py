@@ -11,12 +11,19 @@ class WikiSearcher(object):
         self.wiki = wikipediaapi.Wikipedia('zh')
 
     def search(self, query):
-        page = self.wiki.page(query)
 
-        if not page.exists():
-            page = self.wiki.page(cc.convert(query))
+        result = None
 
-        if page.exists():
-            return page
-        else:
-            return None
+        try:
+            page = self.wiki.page(query)
+
+            if not page.exists():
+                page = self.wiki.page(cc.convert(query))
+
+            if page.exists():
+                result = page
+
+        except Exception as e:
+            print(e)
+
+        return result

@@ -36,9 +36,9 @@
       <div v-else-if="info.image && Array.isArray(info.image)">
         <img v-for="(img, index) in info.image" :key="index" :src="img" class="info-image" alt="">
       </div>
-      <p v-show="info.graph?.nodes.length > 0"><b>关联图谱</b></p>
-      <div id="lite_graph" v-show="info.graph?.nodes.length > 0"></div>
-      <a-collapse v-model:activeKey="state.activeKey" v-if="info.graph?.sents.length > 0" accordion>
+      <p v-show="info.graph?.nodes?.length > 0"><b>关联图谱</b></p>
+      <div id="lite_graph" v-show="info.graph?.nodes?.length > 0"></div>
+      <a-collapse v-model:activeKey="state.activeKey" v-if="info.graph?.sents?.length > 0" accordion>
         <a-collapse-panel
           v-for="(sent, index) in info.graph.sents"
           :key="index"
@@ -154,7 +154,7 @@ const sendMessage = () => {
           // 处理维基百科的内容
           info.title = wiki?.title
           info.description = wiki?.summary
-          if (info.graph) {
+          if (info.graph && info.graph.nodes) {
             myChart.setOption(graphOption(info.graph));
           }
 
