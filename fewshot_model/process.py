@@ -1,9 +1,9 @@
 import os
-from data.schema import schema_v3
+from data.schema import schema_v4
 from paddlenlp import Taskflow
 
 
-relation_ie = Taskflow("information_extraction", schema=schema_v3.schema, task_path="/fast/zwj/fuchuang-kg/weights/model_41_100")
+relation_ie = Taskflow("information_extraction", schema=schema_v3.schema, task_path="/data_F/zhijian/fuchuang-kg/PaddleNLP-model_zoo-uie/checkpoint/model_best_41line_100ep")
 
 
 # 关系抽取并修改json文件
