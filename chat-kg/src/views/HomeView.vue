@@ -2,7 +2,7 @@
   <div class="welcome">
     <h1>{{ title }}</h1>
     <p>{{ description }}</p>
-    <img src="/logo_jnu.svg" alt="Placeholder Image" />
+    <img src="/homegraph.png" alt="Placeholder Image" />
   </div>
 </template>
 

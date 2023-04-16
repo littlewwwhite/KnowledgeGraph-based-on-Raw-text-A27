@@ -30,12 +30,18 @@
     </div>
     <div class="info">
       <h1>{{ info.title }}</h1>
-      <p class="description" >{{ info.description }}</p>
+
+      <p class="description" v-if="info.description && typeof info.description === 'string'">{{ info.description }}</p>
+      <div v-else-if="info.description && Array.isArray(info.description)">
+        <p class="description" v-for="(desc, index) in info.description" :key="index">{{ desc }}</p>
+      </div>
       <!-- 判断 info.image 是不是空，然后判断是不是数组，如果是数组则使用 v-for -->
+
       <img v-if="info.image && typeof info.image === 'string'" :src="info.image" class="info-image" alt="">
       <div v-else-if="info.image && Array.isArray(info.image)">
         <img v-for="(img, index) in info.image" :key="index" :src="img" class="info-image" alt="">
       </div>
+
       <p v-show="info.graph?.nodes?.length > 0"><b>关联图谱</b></p>
       <div id="lite_graph" v-show="info.graph?.nodes?.length > 0"></div>
       <a-collapse v-model:activeKey="state.activeKey" v-if="info.graph?.sents?.length > 0" accordion>
@@ -68,9 +74,15 @@ const state = reactive({
 })
 
 const default_info = {
-  title: '知识图谱问答 ChatKG',
-  description: '基于特定领域知识图谱的问答系统，支持多轮对话，支持外部信息检索',
-  image: ['chat-kg/src/assets/chatgraph.png'],
+  title: '你好，我是 ChatKG',
+  description: [
+    '基于特定领域知识图谱的问答系统，支持多轮对话，支持外部信息检索，你可以：',
+    '1. 输入问题，获取答案',
+    '2. 输入问题，获取答案，然后输入问题，获取答案',
+    '3. 输入问题，获取答案，然后输入问题，获取答案，然后输入问题，获取答案',
+    '4. 输入问题，获取答案，然后输入问题，获取答案，然后输入问题，获取答案，然后输入问题，获取答案',
+  ],
+  image: [],
   graph: null,
 }
 
@@ -398,7 +410,7 @@ div.info {
     // text-align: center;
   }
 
-  & > p.description {
+  p.description {
     font-size: 1rem;
     margin: 0;
     // padding: 0.5rem;
