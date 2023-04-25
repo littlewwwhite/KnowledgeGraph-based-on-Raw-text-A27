@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append('server/app')
 import json
 from opencc import OpenCC
 from transformers import AutoTokenizer, AutoModel
@@ -59,6 +61,7 @@ def stream_predict(user_input, history=None):
         if wiki is not None:
             break
 
+    # 将Wikipedia搜索到的繁体转为简体
     if wiki:
         ref += cc.convert(wiki.summary)
         wiki = {
@@ -115,6 +118,7 @@ def stream_predict(user_input, history=None):
         }
         yield json.dumps(result, ensure_ascii=False).encode('utf8') + b'\n'
 
+# 加载模型
 def start_model():
     global model, tokenizer, init_history
 
@@ -122,6 +126,6 @@ def start_model():
     model = AutoModel.from_pretrained("/fast/zwj/ChatGLM-6B/weights", trust_remote_code=True).half().cuda()
     model.eval()
 
-    pre_prompt = "你叫 ChatKG，是一个军事领域知识图谱问答机器人，由江南大学先进技术研究院研发，此为背景。下面开始聊天吧！"
+    pre_prompt = "你叫 ChatKG，是一个图谱问答机器人，此为背景。下面开始聊天吧！"
     _, history = predict(pre_prompt, [])
     init_history = history

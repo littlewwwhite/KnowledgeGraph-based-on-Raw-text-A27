@@ -5,7 +5,7 @@
 
 __pycache__
 ./SPN4RE/bert_pretrain/
-
+Uie-finetune/checkpoint/
 test*.ipynb
 
 # Logs
