@@ -1,7 +1,7 @@
 
 # shell doccona标注文件生成
 python doccano.py \
-    --doccano_file ./data/doccano.json \
+    --doccano_file Uie-finetune/data/doccano.json \
     --task_type ext \
     --save_dir ./data/41line \
     --splits 0.8 0.2 0 \
