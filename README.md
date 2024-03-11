@@ -1,12 +1,12 @@
 # 基于知识图谱和知识库的大模型对话系统
 
 ## Demo1-chat 功能
-https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/raw/main/demo/video-demo-chat.mp4
+![chat](https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/raw/main/demo/video-demo-chat.mp4)
 <video src="https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/raw/main/demo/video-demo-chat.mp4" width="640" height="480" controls></video>
 <!-- <video controls src="demo/demo_video.mp4" title="Demo"></video> -->
 
 ## Demo2-KG 展示
-https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/raw/main/demo/video-demo-kg.mp4
+![KG](https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/raw/main/demo/video-demo-kg.mp4)
 <video src="https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/raw/main/demo/video-demo-kg.mp4" width="640" height="480" controls></video>
 
 ## 项目整体流程介绍
