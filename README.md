@@ -1,8 +1,7 @@
-# fuchuang-kg
-基于知识图谱和知识库的大模型对话系统
+# 基于知识图谱和知识库的大模型对话系统
 
 ## Demo
-<video controls src="demo/demo_video.mp4" title="Demo"></video>
+<!-- <video controls src="demo/demo_video.mp4" title="Demo"></video> -->
 
 ## 项目整体流程介绍
 #### 项目整体包含5个部分：数据预处理、图谱构建、图谱补全、对话模型、网页呈现
