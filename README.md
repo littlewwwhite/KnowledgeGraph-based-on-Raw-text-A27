@@ -1,13 +1,7 @@
 # 基于知识图谱和知识库的大模型对话系统
 
-## Demo1-chat 功能
-[![chat]![-](demo/demo-chat.png)](demo/video-demo-chat.mp4)
-<video src="https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/raw/main/demo/video-demo-chat.mp4" width="640" height="480" controls></video>
-<!-- <video controls src="demo/demo_video.mp4" title="Demo"></video> -->
-
-## Demo2-KG 展示
-[![KG]![-](demo/demo-kg.png)](demo/video-demo-kg.mp4)
-<video src="https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/raw/main/demo/video-demo-kg.mp4" width="640" height="480" controls></video>
+## Demo 展示
+<video src="https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/assets/34784086/aa089b51-0b88-4d2b-b7fe-d892c503e55c" width="640" height="480" controls></video>
 
 ## 项目整体流程介绍
 #### 项目整体包含5个部分：数据预处理、图谱构建、图谱补全、对话模型、网页呈现
