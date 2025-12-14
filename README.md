@@ -12,7 +12,7 @@
 
 *Combining Knowledge Graph Construction, Graph Completion, and ChatGLM for Intelligent Q&A*
 
-[功能特点](#-功能特点) • [快速开始](#-快速开始) • [系统架构](#-系统架构) • [使用指南](#-使用指南) • [配置说明](#-配置说明)
+[功能特点](#-功能特点) • [快速开始](#-快速开始) • [系统架构](#-系统架构) • [常见问题](#-常见问题) • [配置说明](#-配置说明)
 
 </div>
 
@@ -31,13 +31,13 @@ https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/assets/347
 <td width="50%">
 
 ### 💬 智能对话界面
-![对话演示](demo/demo-chat.png)
+![对话演示](docs/images/demo-chat.png)
 
 </td>
 <td width="50%">
 
 ### 🔗 知识图谱可视化
-![图谱演示](demo/demo-kg.png)
+![图谱演示](docs/images/demo-kg.png)
 
 </td>
 </tr>
@@ -80,42 +80,71 @@ https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/assets/347
 
 项目包含 **5 个核心模块**：数据预处理 → 图谱构建 → 图谱补全 → 对话模型 → 网页呈现
 
-![整体流程](demo/all.png)
+<div align="center">
 
-<details>
-<summary><b>📊 点击展开各模块详细说明</b></summary>
+![整体流程](docs/images/all.png)
+
+</div>
+
+---
 
 ### 1️⃣ 数据预处理
 
 将原始文本数据进行清洗、分句、标准化处理，为后续的信息抽取做准备。
 
-![数据预处理环节](demo/data_process.png)
+<div align="center">
+
+![数据预处理环节](docs/images/data_process.png)
+
+</div>
+
+---
 
 ### 2️⃣ 种子图谱构建
 
 利用 PaddleNLP UIE 模型和 ChatGPT 定义的关系 Schema 构建初始知识图谱。
 
-![图谱构建](demo/build_kg.png)
+<div align="center">
+
+![图谱构建](docs/images/build_kg.png)
+
+</div>
+
+---
 
 ### 3️⃣ 图谱补全迭代
 
 通过 SPN4RE 模型对种子图谱进行迭代补全，逐步扩展知识覆盖范围。
 
-![图谱补全](demo/kg.png)
+<div align="center">
+
+![图谱补全](docs/images/kg.png)
+
+</div>
+
+---
 
 ### 4️⃣ 对话服务
 
 基于 ChatGLM-6B 构建问答服务，结合知识图谱实现精准检索与智能回答。
 
-![对话模型](demo/chat.png)
+<div align="center">
+
+![对话模型](docs/images/chat.png)
+
+</div>
+
+---
 
 ### 5️⃣ 前端界面
 
 使用 Vue 3 + ECharts 构建现代化的交互界面，支持对话与图谱可视化。
 
-![前端](demo/web.png)
+<div align="center">
 
-</details>
+![前端](docs/images/web.png)
+
+</div>
 
 ---
 
@@ -129,7 +158,7 @@ https://github.com/littlewwwhite/KnowledgeGraph-based-on-Raw-text-A27/assets/347
 | PyTorch | 1.10+ | 需支持 CUDA |
 | PaddlePaddle | 2.4+ | GPU 版本 |
 | Node.js | 16+ | 前端构建 |
-| GPU | NVIDIA 3090 | 推荐双卡 |
+| GPU | NVIDIA 3090 | 推荐双卡，显存 24GB+ |
 
 ### 1. 克隆项目
 
@@ -140,20 +169,34 @@ cd KnowledgeGraph-based-on-Raw-text-A27
 
 ### 2. 安装后端依赖
 
+> ⚠️ **重要**: 请严格按照以下顺序安装依赖，避免版本冲突
+
 ```bash
-# 创建虚拟环境 (推荐使用 uv)
-uv venv --python 3.8
+# 创建虚拟环境 (推荐使用 conda)
+conda create -n chatkg python=3.8.16
+conda activate chatkg
+
+# 或者使用 venv
+python3.8 -m venv .venv
 source .venv/bin/activate  # Linux/macOS
 # .venv\Scripts\activate   # Windows
 
-# 安装依赖
-pip install -r requirements.txt
+# 1. 首先安装 PyTorch (根据 CUDA 版本选择)
+# CUDA 11.3
+pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 
-# 安装 GPU 版本 PyTorch (根据 CUDA 版本选择)
-pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+# CUDA 11.6
+pip install torch==1.12.0+cu116 torchvision==0.13.0+cu116 -f https://download.pytorch.org/whl/torch_stable.html
 
-# 安装 GPU 版本 PaddlePaddle
+# 2. 安装 PaddlePaddle GPU 版本
+# CUDA 11.2
 pip install paddlepaddle-gpu==2.4.2.post112 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
+
+# CUDA 11.6
+pip install paddlepaddle-gpu==2.4.2.post116 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
+
+# 3. 安装其他依赖
+pip install -r requirements.txt
 ```
 
 ### 3. 配置环境变量
@@ -162,34 +205,51 @@ pip install paddlepaddle-gpu==2.4.2.post112 -f https://www.paddlepaddle.org.cn/w
 # 复制配置模板
 cp .env.example .env
 
-# 编辑配置 (至少设置以下项)
-vim .env
+# 编辑配置
+vim .env  # 或使用任意编辑器
 ```
 
-关键配置项：
+**必须配置的项目：**
 
 ```bash
-# 模型路径 (本地路径或 HuggingFace 模型名)
+# 模型路径 - 可以是本地路径或 HuggingFace 模型名
 CHATGLM_MODEL_PATH=THUDM/chatglm-6b
+# 或者本地路径: CHATGLM_MODEL_PATH=/path/to/chatglm-6b
 
 # GPU 配置
-CUDA_VISIBLE_DEVICES=0,1
+CUDA_VISIBLE_DEVICES=0
 
 # 服务端口
 SERVER_PORT=8000
 ```
 
-### 4. 构建知识图谱
+### 4. 准备数据
+
+```bash
+# 将原始文本数据放入 data/raw_data/ 目录
+cp your_data.txt data/raw_data/raw_data.txt
+```
+
+### 5. 构建知识图谱
 
 ```bash
 # 运行知识图谱构建流程
 python main.py --project my_project --gpu 0
 
-# 从检查点恢复
+# 从检查点恢复 (如果之前中断)
 python main.py --project my_project --resume checkpoint_v3 --gpu 0
 ```
 
-### 5. 启动后端服务
+### 6. 准备对话服务数据
+
+```bash
+# 将生成的知识图谱复制到 server/data/
+cp data/project_v1/iter_vN.json server/data/data.json
+```
+
+> 💡 **说明**: `iter_vN.json` 是最终迭代版本的知识图谱文件，N 为迭代次数
+
+### 7. 启动后端服务
 
 ```bash
 cd server
@@ -197,7 +257,7 @@ python main.py
 # 服务将启动在 http://localhost:8000
 ```
 
-### 6. 启动前端界面
+### 8. 启动前端界面
 
 ```bash
 cd chat-kg
@@ -211,6 +271,107 @@ npm run dev
 
 # 生产构建
 npm run build
+npm run preview
+```
+
+---
+
+## ❓ 常见问题
+
+### Q1: 依赖包版本冲突怎么办？
+
+**问题**: 安装依赖时出现版本冲突错误
+
+**解决方案**:
+
+```bash
+# 1. 创建全新的虚拟环境
+conda create -n chatkg python=3.8.16 -y
+conda activate chatkg
+
+# 2. 按顺序安装核心依赖
+pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+pip install paddlepaddle-gpu==2.4.2.post112 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
+pip install transformers==4.27.0
+pip install paddlenlp==2.5.2
+
+# 3. 安装其他依赖
+pip install flask flask-cors numpy pandas wikipedia opencc-python-reimplemented
+```
+
+### Q2: inference.pdmodel 文件缺失？
+
+**问题**: 启动 server 时提示 `inference.pdmodel` 文件不存在
+
+**解决方案**:
+
+```bash
+# 1. 确保 PaddleNLP 正确安装
+pip install paddlenlp==2.5.2 --force-reinstall
+
+# 2. 手动下载 UIE 模型
+python -c "from paddlenlp import Taskflow; ie = Taskflow('information_extraction', schema=['实体'])"
+
+# 3. 如果仍然失败，检查网络并重试
+# 模型会下载到 ~/.paddlenlp/taskflow/
+```
+
+### Q3: knowledge_graph.json 如何转换为 data.json？
+
+**问题**: 不清楚如何从初步图谱生成服务所需的数据文件
+
+**解决方案**:
+
+1. 运行 `main.py` 完成图谱构建迭代
+2. 在 `data/project_v1/` 目录下找到最新的 `iter_vN.json`
+3. 复制到 server 目录:
+
+```bash
+cp data/project_v1/iter_v5.json server/data/data.json
+```
+
+### Q4: 数据预处理代码在哪里？
+
+**解决方案**:
+
+数据预处理代码位于 `modules/prepare/` 目录:
+
+- `preprocess.py` - 文本清洗和分句
+- `process.py` - UIE 信息抽取
+- `filter.py` - 三元组过滤验证
+
+使用方式已集成在 `main.py` 的 `get_base_kg_from_txt()` 方法中。
+
+### Q5: GPU 显存不足？
+
+**解决方案**:
+
+```bash
+# 1. 减小批次大小
+# 编辑 .env 文件
+BATCH_SIZE=4  # 或更小
+
+# 2. 使用 CPU 推理 (较慢但可行)
+CUDA_VISIBLE_DEVICES=""
+
+# 3. 使用量化模型
+# 在 server/app/utils/chat_glm.py 中启用 int4 量化
+```
+
+### Q6: 前端无法连接后端？
+
+**解决方案**:
+
+```bash
+# 1. 确认后端服务已启动
+curl http://localhost:8000/
+
+# 2. 检查端口配置
+# chat-kg/.env.local
+VITE_API_URL=http://localhost:8000
+
+# 3. 检查 CORS 配置
+# server 已默认启用 CORS
 ```
 
 ---
@@ -328,14 +489,21 @@ KnowledgeGraph-based-on-Raw-text-A27/
 │   ├── raw_data/             # 原始文本数据
 │   ├── schema/               # 关系 Schema 定义
 │   └── project_*/            # 项目数据 (自动生成)
+├── 📂 docs/                  # 文档和资源
+│   ├── images/               # README 图片资源
+│   └── notebooks/            # Jupyter 示例笔记本
 ├── 📂 modules/               # 核心模块
 │   ├── knowledge_graph_builder.py  # 图谱构建器
 │   ├── model_trainer.py      # SPN4RE 训练器
 │   ├── prepare/              # 数据预处理
+│   ├── SPN4RE/               # 关系抽取模型
 │   └── utils/                # 工具函数
 ├── 📂 server/                # Flask 后端
-│   ├── main.py               # 服务入口
-│   └── chat_glm.py           # ChatGLM 封装
+│   ├── app/                  # Flask 应用
+│   │   ├── utils/            # 工具模块 (ChatGLM, NER, etc.)
+│   │   └── views/            # API 视图
+│   ├── data/                 # 运行时数据 (data.json)
+│   └── main.py               # 服务入口
 ├── 📂 tests/                 # 测试用例
 ├── 📜 main.py                # 主入口
 ├── 📜 requirements.txt       # Python 依赖
@@ -407,7 +575,7 @@ KnowledgeGraph-based-on-Raw-text-A27/
 pytest
 
 # 运行特定模块测试
-pytest tests/test_config.py -v
+pytest tests/test_settings.py -v
 
 # 查看测试覆盖率
 pytest --cov=modules tests/
