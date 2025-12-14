@@ -1,20 +1,48 @@
-import os
-from data.schema import schema_v4
+"""
+UIE-based relation extraction processing module.
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = '1'
-from paddle import inference as paddle_infer
+Provides functions for extracting relation triples from text using
+PaddleNLP's UIE (Universal Information Extraction) model.
+"""
+from typing import Any, Dict, List
+
 from paddlenlp import Taskflow
 
-# 定义一个函数，用于关系抽取
-def paddle_relation_ie(content):
-    relation_ie = Taskflow("information_extraction", schema=schema_v4.schema, batch_size=2)
+from data.schema import schema_v4
+from modules.utils.logger import logger
+
+
+def paddle_relation_ie(content: List[str]) -> List[Dict[str, Any]]:
+    """
+    Extract relations from text using PaddleNLP UIE.
+
+    Args:
+        content: List of text segments to process.
+
+    Returns:
+        UIE extraction results with entity-relation structures.
+    """
+    relation_ie = Taskflow(
+        "information_extraction",
+        schema=schema_v4.schema,
+        batch_size=2
+    )
     return relation_ie(content)
 
 
-# 关系抽取并修改json文件
-def rel_json(content):
-    all_relations = [] # 定义一个空列表，用于存储每个chapter的关系信息
-    res_relation = paddle_relation_ie(content)  # 传入文本进行关系识别
+def rel_json(content: str) -> List[Dict[str, str]]:
+    """
+    Extract relation triples from a single text segment.
+
+    Args:
+        content: Text to extract relations from.
+
+    Returns:
+        List of relation triples with em1Text, em2Text, and label.
+    """
+    all_relations: List[Dict[str, str]] = []
+    res_relation = paddle_relation_ie([content])
+
     for rel in res_relation:
         for sub_type, sub_rel in rel.items():
             for sub in sub_rel:
@@ -24,30 +52,44 @@ def rel_json(content):
                     for obj in rel_obj:
                         if not sub['text'] or not obj['text']:
                             continue
-                        rel_triple = {"em1Text": sub['text'],"em2Text": obj['text'],"label": rel_type}
+                        rel_triple = {
+                            "em1Text": sub['text'],
+                            "em2Text": obj['text'],
+                            "label": rel_type
+                        }
                         all_relations.append(rel_triple)
+
     return all_relations
 
 
-# 执行函数
-# 
-def uie_execute(texts):
+def uie_execute(texts: List[str]) -> List[Dict[str, Any]]:
+    """
+    Execute UIE extraction on multiple text segments.
 
-    sent_id = 0
-    all_items = []
-    for line in texts:
+    Args:
+        texts: List of text segments to process.
+
+    Returns:
+        List of items with id, sentText, and relationMentions.
+    """
+    logger.info(f"Starting UIE extraction on {len(texts)} segments")
+
+    all_items: List[Dict[str, Any]] = []
+
+    for sent_id, line in enumerate(texts):
         line = line.strip()
         all_relations = rel_json(line)
 
-        item = {}
-        item["id"] = sent_id
-        item["sentText"] = line
-        item["relationMentions"] = all_relations
-
-        sent_id += 1
-        if sent_id % 10 == 0 and sent_id != 0:
-            print("Done {} lines".format(sent_id))
+        item: Dict[str, Any] = {
+            "id": sent_id,
+            "sentText": line,
+            "relationMentions": all_relations
+        }
 
         all_items.append(item)
 
+        if (sent_id + 1) % 10 == 0:
+            logger.info(f"Processed {sent_id + 1}/{len(texts)} segments")
+
+    logger.success(f"UIE extraction complete: {len(all_items)} items")
     return all_items

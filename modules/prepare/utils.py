@@ -1,86 +1,122 @@
+"""
+Utility functions for knowledge graph data refinement.
+"""
 import json
+import os
+from typing import List
 
-def check_input(prompt, keys):
+from modules.utils.logger import logger
 
-    checked = False
-    while not checked:
+
+def check_input(prompt: str, keys: List[str]) -> str:
+    """
+    Prompt user for input and validate against allowed keys.
+
+    Args:
+        prompt: The prompt message to display.
+        keys: List of valid input values.
+
+    Returns:
+        The validated user input.
+    """
+    while True:
         user_input = input(f"{prompt} > ")
         if user_input in keys:
-            checked = True
-        else:
-            print("输入错误，请重新输入")
-
-    return user_input
+            return user_input
+        print("Invalid input, please try again")
 
 
-def refine_knowledge_graph(kg_path, refined_kg_path, fast_mode=True):
-    """用于手工对知识图谱进行筛选，也就是遍历 sentence 和 relations，然后手工筛选
-    kg_path: 原始三元组存储路径
-    refined_kg_path: 筛选后三元组存储路径
-    fast_mode: 如果为 True，直接写入
+def refine_knowledge_graph(
+    kg_path: str,
+    refined_kg_path: str,
+    fast_mode: bool = True
+) -> str:
     """
+    Manually refine knowledge graph by filtering relation triples.
 
-    # 判断是否继续
+    Args:
+        kg_path: Path to original knowledge graph file.
+        refined_kg_path: Path to save refined knowledge graph.
+        fast_mode: If True, skip manual filtering and copy directly.
 
-    print(f"源数据：{kg_path}")
-    print(f"筛选后数据：{refined_kg_path}\n")
+    Returns:
+        Path to the refined knowledge graph file.
 
-    try:
-        with open(kg_path, 'r', encoding='UTF-8') as f_src, open(refined_kg_path, 'w', encoding='UTF-8') as f_refined:
+    Raises:
+        FileNotFoundError: If source file does not exist.
+        KeyboardInterrupt: If user cancels the operation.
+    """
+    logger.info(f"Source: {kg_path}")
+    logger.info(f"Target: {refined_kg_path}")
+
+    # Determine starting position for resume support
+    start_pos = 0
+
+    if os.path.exists(refined_kg_path):
+        try:
+            with open(kg_path, 'r', encoding='UTF-8') as f_src:
+                kg_lines = [json.loads(line) for line in f_src if line.strip()]
+
+            with open(refined_kg_path, 'r', encoding='UTF-8') as f_refined:
+                refined_lines = [json.loads(line) for line in f_refined if line.strip()]
+
+            # Find where to resume
+            for i, (kg_line, ref_line) in enumerate(zip(kg_lines, refined_lines)):
+                if kg_line.get("id") == ref_line.get("id"):
+                    start_pos = i + 1
+                else:
+                    break
+
+            if start_pos > 0:
+                logger.info(f"Resuming from entry {start_pos + 1} ({start_pos} already processed)")
+
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"Could not parse existing refined file ({e}), starting fresh")
             start_pos = 0
-            kg_lines = f_src.readlines()
-            refined_lines = f_refined.readlines()
-            for i in range(len(refined_lines)):
-                if refined_lines[i]["id"] == kg_lines[i]["id"]:
-                    f_refined.writelines(json.dumps(refined_lines[i], ensure_ascii=False) + "\n")
-                    start_pos += 1
 
-        print(f"检测到已经筛选过 {start_pos} 条数据，将从第 {start_pos + 1} 条开始筛选\n")
+    # Read source data
+    with open(kg_path, 'r', encoding='UTF-8') as f_in:
+        lines = [json.loads(line) for line in f_in if line.strip()]
 
-    except:
-        print("检测到没有筛选过数据，将从第 1 条开始筛选\n")
-        start_pos = 0
+    total = len(lines)
 
-    with open(kg_path, 'r', encoding='UTF-8') as f_in, open(refined_kg_path, 'a+', encoding='UTF-8') as f_out:
-        lines = f_in.readlines()
+    # Open output file in append mode if resuming, write mode otherwise
+    write_mode = 'a' if start_pos > 0 else 'w'
 
-        total = len(lines)
-
+    with open(refined_kg_path, write_mode, encoding='UTF-8') as f_out:
         for pos in range(start_pos, total):
-            line = json.loads(lines[pos])
+            line = lines[pos]
 
             if fast_mode:
-                f_out.writelines(json.dumps(line, ensure_ascii=False) + "\n")
-                print("fast_mode已打开，数据不需要筛选，已保存！")
+                f_out.write(json.dumps(line, ensure_ascii=False) + "\n")
+                if pos == start_pos:
+                    logger.info("Fast mode enabled, copying data without manual filtering")
                 continue
 
-            print(f"【 {pos+1}/{total} 】在这个句子中 >>>>>>>>")
+            # Manual filtering mode
+            print(f"\n【 {pos+1}/{total} 】Processing sentence >>>>>>>>")
+            print(line["sentText"])
 
             refined_triples = []
-            print(line["sentText"])
-            for triple in line["relationMentions"]:
-                print(f"\n主体：【{triple['em1Text']}】, 关系：【{triple['label']}】，客体：【{triple['em2Text']}】")
-                user_input = check_input(
-                    prompt="是否构成关系？是则直接【Y】，否则输入【N】，输入【回车】暂时退出",
-                    keys=["Y", "y", "N", "n", ""])
+            for triple in line.get("relationMentions", []):
+                print(f"\nSubject: 【{triple['em1Text']}】")
+                print(f"Relation: 【{triple['label']}】")
+                print(f"Object: 【{triple['em2Text']}】")
 
-                if user_input == "Y" or user_input == "y":
+                user_input = check_input(
+                    prompt="Keep this triple? [Y]es / [N]o / [Enter] to exit",
+                    keys=["Y", "y", "N", "n", ""]
+                )
+
+                if user_input.lower() == "y":
                     refined_triples.append(triple)
                 elif user_input == "":
-                    print("退出筛选！")
-                    exit(0)
+                    logger.warning("User cancelled refinement process")
+                    raise KeyboardInterrupt("User cancelled refinement")
 
             line["relationMentions"] = refined_triples
-            f_out.writelines(json.dumps(line, ensure_ascii=False) + "\n")
-            print("已保存！\n")
+            f_out.write(json.dumps(line, ensure_ascii=False) + "\n")
+            print("Saved!")
 
-    print("筛选完成！辛苦！")
-
+    logger.success("Refinement complete")
     return refined_kg_path
-
-#
-# if __name__ == "__main__":
-#     kg_path = "res_base_v4.json"
-#     refined_kg_path = "res_base_v4_refine.json"
-#
-#     refine_knowledge_graph(kg_path, refined_kg_path)

@@ -2,11 +2,18 @@
 .vscode
 .DS_Store
 *.pickle
+.venv
+.pytest_cache
 
 __pycache__
 ./SPN4RE/bert_pretrain/
 Uie-finetune/checkpoint/
 test*.ipynb
+
+# Environment variables
+.env
+.env.local
+.env.*.local
 
 # Logs
 logs

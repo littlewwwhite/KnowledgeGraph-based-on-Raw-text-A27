@@ -22,6 +22,6 @@ def page_not_found(e):
 
 
 @apps.errorhandler(403)
-def page_not_found(e):
+def forbidden(e):
     return jsonify({"message": str(e)}), 403
 

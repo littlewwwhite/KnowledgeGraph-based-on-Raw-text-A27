@@ -1,6 +1,13 @@
 import os
 import sys
-sys.path.append('server/app')
+
+# Add project root to path for config import
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, project_root)
+
+from config.settings import settings
+from modules.utils.logger import logger
+
 import json
 from opencc import OpenCC
 from transformers import AutoTokenizer, AutoModel
@@ -36,7 +43,7 @@ def stream_predict(user_input, history=None):
     graph = {}
     entities = []
     entities = ner.get_entities(user_input, etypes=["物体类", "人物类", "地点类", "组织机构类", "事件类", "世界地区类", "术语类"])
-    print("entities: ", entities)
+    logger.debug(f"Extracted entities: {entities}")
 
     # 获取实体的三元组
     triples = []
@@ -68,7 +75,7 @@ def stream_predict(user_input, history=None):
             "title": cc.convert(wiki.title),
             "summary": cc.convert(wiki.summary),
         }
-        print(wiki)
+        logger.debug(f"Wiki info: {wiki['title']}")
     else:
         wiki = {
             "title": "无相关信息",
@@ -87,7 +94,7 @@ def stream_predict(user_input, history=None):
                 user_input = user_input.split("===参考资料===")[0]
             clean_history.append((user_input, response))
 
-        print("chat_input: ", chat_input)
+        logger.debug(f"Chat input: {chat_input[:100]}...")
         for response, history in model.stream_chat(tokenizer, chat_input, clean_history):
             updates = {}
             for query, response in history:
@@ -118,14 +125,18 @@ def stream_predict(user_input, history=None):
         }
         yield json.dumps(result, ensure_ascii=False).encode('utf8') + b'\n'
 
-# 加载模型
+# Load model
 def start_model():
     global model, tokenizer, init_history
 
-    tokenizer = AutoTokenizer.from_pretrained("/fast/zwj/ChatGLM-6B/weights", trust_remote_code=True)
-    model = AutoModel.from_pretrained("/fast/zwj/ChatGLM-6B/weights", trust_remote_code=True).half().cuda()
+    model_path = settings.CHATGLM_MODEL_PATH
+    logger.info(f"Loading model from: {model_path}")
+
+    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+    model = AutoModel.from_pretrained(model_path, trust_remote_code=True).half().cuda()
     model.eval()
 
     pre_prompt = "你叫 ChatKG，是一个图谱问答机器人，此为背景。下面开始聊天吧！"
     _, history = predict(pre_prompt, [])
     init_history = history
+    logger.success("Model loaded successfully")
