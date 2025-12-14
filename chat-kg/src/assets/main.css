@@ -1,10 +1,36 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 2rem;
-
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
   font-weight: normal;
-  /* height: 100vh; */
+  min-height: 100vh;
+}
+
+/* Override Ant Design styles for consistency */
+.ant-btn {
+  font-family: var(--font-sans);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.ant-input {
+  font-family: var(--font-sans);
+  border-radius: var(--radius-md);
+}
+
+.ant-collapse {
+  font-family: var(--font-sans);
+}
+
+/* Ensure smooth scrolling globally */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection styling */
+::selection {
+  background: var(--color-primary-200);
+  color: var(--color-primary-900);
 }

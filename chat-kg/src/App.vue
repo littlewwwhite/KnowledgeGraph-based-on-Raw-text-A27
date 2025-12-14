@@ -2,77 +2,175 @@
 import { KeepAlive } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 
-// 打印当前页面的路由信息，使用 vue3 的 setup composition API
 const route = useRoute()
-console.log(route)
-
-
-
 </script>
 
 <template>
-  <header class="header">
-    <nav class="nav">
-      <RouterLink to="/" class="nav-item" active-class="active">主页</RouterLink>
-      <RouterLink to="/chat" class="nav-item" active-class="active">问答</RouterLink>
-      <RouterLink to="/kg" class="nav-item" active-class="active">图谱</RouterLink>
-      <RouterLink to="/about" class="nav-item" active-class="active">关于</RouterLink>
-    </nav>
-  </header>
+  <div class="app-container">
+    <header class="app-header glass">
+      <div class="header-content">
+        <div class="logo-section">
+          <span class="logo-icon">🧠</span>
+          <span class="logo-text gradient-text">ChatKG</span>
+        </div>
 
-    <router-view v-slot="{ Component }">
-      <keep-alive>
-        <component :is="Component" />
-      </keep-alive>
-    </router-view>
+        <nav class="main-nav">
+          <RouterLink to="/" class="nav-link" active-class="active">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+          </RouterLink>
+          <RouterLink to="/chat" class="nav-link" active-class="active">
+            <span class="nav-icon">💬</span>
+            <span class="nav-text">Chat</span>
+          </RouterLink>
+          <RouterLink to="/kg" class="nav-link" active-class="active">
+            <span class="nav-icon">🔗</span>
+            <span class="nav-text">Graph</span>
+          </RouterLink>
+          <RouterLink to="/about" class="nav-link" active-class="active">
+            <span class="nav-icon">ℹ️</span>
+            <span class="nav-text">About</span>
+          </RouterLink>
+        </nav>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
+    </main>
+  </div>
 </template>
 
 <style lang="less" scoped>
-.header {
+.app-container {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 40px 0;
+  flex-direction: column;
+  background: var(--bg-page);
 }
 
-.nav {
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  border-bottom: 1px solid var(--color-neutral-150);
+  animation: fadeInDown var(--duration-slow) var(--ease-out);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-6);
   display: flex;
+  align-items: center;
   justify-content: space-between;
+}
+
+.logo-section {
+  display: flex;
   align-items: center;
+  gap: var(--space-2);
+}
+
+.logo-icon {
+  font-size: var(--text-2xl);
+}
+
+.logo-text {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-neutral-100);
+  padding: var(--space-1);
+  border-radius: var(--radius-xl);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-neutral-600);
+  text-decoration: none;
+  transition: all var(--duration-fast) var(--ease-default);
   position: relative;
-  height: 45px;
+
+  &:hover {
+    color: var(--color-neutral-800);
+    background: var(--color-neutral-200);
+  }
+
+  &.active {
+    color: var(--color-primary-700);
+    background: var(--color-neutral-0);
+    box-shadow: var(--shadow-sm);
+
+    .nav-icon {
+      transform: scale(1.1);
+    }
+  }
 }
 
-.nav-item {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  background-color: transparent;
-  color: #333;
-  font-size: 16px;
-  transition: background-color 0.2s ease-in-out;
-  margin: 0 10px;
+.nav-icon {
+  font-size: var(--text-base);
+  transition: transform var(--duration-fast) var(--ease-spring);
 }
 
-.nav-item:hover {
-  background-color: #e2eef3;
-  cursor: pointer;
+.nav-text {
+  line-height: 1;
 }
 
-.nav-item.active {
-  font-weight: bold;
-  color: #005f77;
+.app-main {
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
 }
 
-.nav-item.active::after {
-  content: '';
-  position: absolute;
-  display: block;
-  width: 2rem;
-  // left: 0;
-  height: 2px;
-  background-color: #005f77;
-  margin-top: 4px;
-  // z-index: 10;
+@media (max-width: 768px) {
+  .header-content {
+    padding: var(--space-3) var(--space-4);
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .logo-section {
+    align-self: flex-start;
+  }
+
+  .main-nav {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nav-link {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .nav-text {
+    display: none;
+  }
+
+  .nav-icon {
+    font-size: var(--text-lg);
+  }
+
+  .app-main {
+    padding: 0 var(--space-4);
+  }
 }
 </style>

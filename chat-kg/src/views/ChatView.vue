@@ -142,20 +142,42 @@ onMounted(() => {
 <style lang="less" scoped>
 .chat-container {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--space-6);
+  padding: var(--space-4);
+  min-height: calc(100vh - 80px);
+  animation: fadeIn var(--duration-slow) var(--ease-out);
 }
 
 .chat {
   display: flex;
   width: 100%;
-  max-width: 800px;
+  max-width: 820px;
   flex-grow: 1;
   margin: 0 auto;
   flex-direction: column;
-  height: calc(100vh - 135px);
-  background: #f5f5f5;
-  border-radius: 8px;
-  box-shadow: 0px 0.3px 0.9px rgba(0, 0, 0, 0.12), 0px 0.6px 2.3px rgba(0, 0, 0, 0.1),
-    0px 1px 5px rgba(0, 0, 0, 0.08);
+  height: calc(100vh - 120px);
+  background: var(--color-neutral-0);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-neutral-150);
+  overflow: hidden;
+  transition: box-shadow var(--duration-normal) var(--ease-default);
+
+  &:hover {
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+@media (max-width: 1200px) {
+  .chat-container {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .chat {
+    max-width: 100%;
+    height: 60vh;
+    min-height: 400px;
+  }
 }
 </style>
