@@ -1,0 +1,29 @@
+# KnowledgeGraph-based-on-Raw-text
+# Python dependencies for the project
+
+# Core ML/NLP
+torch>=1.10.0
+transformers>=4.20.0
+paddlepaddle>=2.4.0
+paddlenlp>=2.5.0
+
+# Data Processing
+numpy>=1.21.0
+pandas>=1.3.0
+
+# Server
+flask>=2.0.0
+flask-cors>=3.0.10
+
+# Text Processing
+opencc-python-reimplemented>=0.1.6
+
+# Visualization (Frontend API)
+wikipedia>=1.4.0
+
+# Testing
+pytest>=7.0.0
+
+# Optional: GPU support
+# torch with CUDA - install separately based on your CUDA version
+# paddlepaddle-gpu - install separately based on your CUDA version
